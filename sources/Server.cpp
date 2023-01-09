@@ -6,14 +6,21 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/03 10:16:53 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/09 11:08:48 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/09 12:04:15 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "Server.hpp"
 
-//Falta fechar os arquivos que foram abertos da maneira certa.
+
+
+//O que ainda precisa ser feito?
 //Criar uma forma de sair do server. 
+//Testar: 
+//the client can be bounced properly if necessary
+/*If the client can be bounced properly, it means that the client can be disconnected from the server in a graceful manner if necessary. This might be necessary if the client is no longer responding to requests or if the client is causing problems with the server. When the client is bounced properly, it means that the server can disconnect the client without disrupting the operation of the server or other clients that are connected to the server.*/
+//A request to your server should never hang forever
 
 Server::Server() : running(true)
 {
@@ -136,6 +143,17 @@ int Server::create_sockets() {
             return 1;
         }
 
+        /*A non-blocking file descriptor is a file descriptor that allows the process to continue executing while waiting for an I/O operation to complete. 
+        This is in contrast to a blocking file descriptor, which causes the process to block (stop execution) until the I/O operation is completed. 
+        Non-blocking file descriptors are useful in situations where the process needs to perform multiple tasks concurrently, as they allow the process to perform other tasks while waiting for an I/O operation to complete.
+        They are often used in event-driven programming and can be set using the fcntl function with the O_NONBLOCK flag.*/
+        
+        if (fcntl(sockfd, F_SETFL, O_NONBLOCK) < 0) 
+        {
+          // there was an error setting the flags
+          std::cerr << "Error setting flags for socket" << std::endl;
+          return 1;
+        }
         // bind the socket to the port specified in the configuration file
         struct sockaddr_in serv_addr;
         serv_addr.sin_family = AF_INET;
