@@ -1,13 +1,6 @@
-# Copyright 2022 ©️ vcwild under the GNU Affero General Public License v3.0.
 NAME = webserv
-
 CXX = clang++
-
-LIBS = -lrt -lm
-
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98  -Wno-long-long -pedantic-errors $(LIBS)
-
-
+CXXFLAGS =  -Wall -Wextra -Werror -std=c++98 -I$(INCLUDES_PATH)
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
 
 # **************************************************************************** #
@@ -24,7 +17,8 @@ INCLUDES_PATH = $(PWD)/includes
 LIBS_PATH = $(PWD)/libs
 ARCHIVES_PATH = $(PWD)/archives
 
-# **************************************************************************** #
+# **************************************************************************** 
+#
 
 HEADER_FILE = algorithm.hpp
 
@@ -39,6 +33,7 @@ OBJECTS = $(addprefix $(OBJECTS_PATH)/,$(subst .cpp,.o,$(SOURCE_FILES)))
 TARGET = bin/$(NAME)
 
 # **************************************************************************** #
+#
 
 ifeq (test,$(firstword $(MAKECMDGOALS)))
   # use the rest as arguments for "run"
@@ -49,28 +44,28 @@ endif
 
 # **************************************************************************** #
 
+
+CPP_FILES = $(shell find $(SOURCES_PATH) -name "*.cpp")
+OBJ_FILES = $(CPP_FILES:$(SOURCES_PATH)/%.cpp=$(OBJECTS_PATH)/%.o)
+
 .PHONY: all run valgrind re fclean clean test $(NAME)
 
 all: $(NAME)
 
-$(OBJECTS_PATH)/%.o: $(SOURCES_PATH)/%.cpp $(HEADER)
-	@$(SAFE_MKDIR) $(OBJECTS_PATH)
-	@$(CXX) $(CXXFLAGS) -I $(INCLUDES_PATH) -o $@ -c $<
+$(NAME): $(OBJ_FILES)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+$(OBJECTS_PATH)/%.o: $(SOURCES_PATH)/%.cpp
+	mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 test:
 	@mkdir -p bin
 	@$(CXX) $(CXXFLAGS) -I $(INCLUDES_PATH) tests/$(RUN_ARGS).cpp -o bin/$(RUN_ARGS)
 	@./bin/$(RUN_ARGS)
 
-$(NAME) : $(TARGET)
-	./$(TARGET)
-
-$(TARGET):
-	@mkdir -p bin
-	@$(CXX) $(CXXFLAGS) -I $(INCLUDES_PATH) sources/main.cpp -o bin/$(NAME)
-
 clean:
-	@$(REMOVE) $(OBJECTS_PATH)
+	rm -rf $(OBJECTS_PATH) $(NAME)
 
 fclean: clean
 	@$(REMOVE) $(TARGET)
