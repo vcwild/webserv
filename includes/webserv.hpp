@@ -54,6 +54,7 @@ struct Request
     std::string body; // request body
     std::string content_type; // text/html
     std::string user_agent; // Mozilla/5.0 (X11; Linux x86_64; rv:78.0)
+    std::string authorization;  // Basic YWRtaW46YWRtaW4=
 };
 
 struct Response
