@@ -1,43 +1,67 @@
 #ifndef WEBSERV_H
-# define WEBSERV_H
+#define WEBSERV_H
 
-#include <string>
-#include <vector> 
-#include <iostream>
-#include <ostream>
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
+#include <cstdlib>
 #include <errno.h>
-#include <poll.h>
 #include <fcntl.h>
+#include <fstream>
+#include <iostream>
+#include <netinet/in.h>
+#include <ostream>
+#include <poll.h>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <string>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <vector>
 
-struct Route {
-  std::string location_dir;
-  std::vector<std::string> allowed_methods;
-  std::string root;
-  int client_max_body_size;
-  std::vector<std::string> http_redirection;
-  std::vector<std::string> cgi; 
-  std::string autoindex; //directory listing 
+struct Route
+{
+    std::string              location_dir;
+    std::vector<std::string> allowed_methods;
+    std::string              root;
+    int                      client_max_body_size;
+    std::vector<std::string> http_redirection;
+    std::vector<std::string> cgi;
+    std::string              autoindex; // directory listing
 };
 
-struct Config {
-  int listen_port;
-  std::string server_name;
-  std::string autoindex;
-  std::vector<std::string> index_files;
-  std::vector<std::string> allowed_methods;
-  std::vector<Route> routes;
-  std::string root_dir;
-  std::vector<std::string> error_pages;
+struct Config
+{
+    int                      listen_port;
+    std::string              server_name;
+    std::string              autoindex;
+    std::vector<std::string> index_files;
+    std::vector<std::string> allowed_methods;
+    std::vector<Route>       routes;
+    std::string              root_dir;
+    std::vector<std::string> error_pages;
+};
+
+struct Request
+{
+    std::string method; // GET
+    std::string host; // hostname
+    std::string port; // port
+    std::string uri; // /index.html
+    std::string version; // HTTP/1.1
+    std::string body; // request body
+    std::string content_type; // text/html
+    std::string user_agent; // Mozilla/5.0 (X11; Linux x86_64; rv:78.0)
+};
+
+struct Response
+{
+    std::string version; // HTTP/1.1
+    std::string status_code; // 200
+    std::string status_message; // OK
+    std::string content_type; // text/html
+    std::string content_length; // 1234
+    std::string body;
 };
 
 int basic_server();
