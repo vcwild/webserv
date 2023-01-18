@@ -21,12 +21,13 @@
 
 struct Route
 {
-    std::string              location_dir;
     std::vector<std::string> allowed_methods;
     std::string              root;
+    std::string              index;
+    std::vector<std::string> cgi;
+    std::string              location_dir;
     int                      client_max_body_size;
     std::vector<std::string> http_redirection;
-    std::vector<std::string> cgi;
     std::string              autoindex; // directory listing
 };
 
@@ -34,12 +35,13 @@ struct Config
 {
     int                      listen_port;
     std::string              server_name;
+    std::string              client_max_body_size;
+    std::vector<std::string> index;
+    std::vector<std::string> allowed_method;
+    std::vector<std::string> error_page;
     std::string              autoindex;
-    std::vector<std::string> index_files;
-    std::vector<std::string> allowed_methods;
     std::vector<Route>       routes;
     std::string              root_dir;
-    std::vector<std::string> error_pages;
 };
 
 struct Request
@@ -63,7 +65,5 @@ struct Response
     std::string content_length; // 1234
     std::string body;
 };
-
-int basic_server();
 
 #endif
