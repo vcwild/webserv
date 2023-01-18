@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/02 09:44:34 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/09 11:09:54 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/18 17:46:17 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,22 @@ std::cout << "Routes Methods:" << std::endl;
     config++;
 }
 
+}
+
+Request createSampleRequest() {
+    Request req;
+    req.method = "GET";
+    req.host = "www.example.com";
+    req.port = "80";
+    req.uri = "/index.html";
+    req.version = "HTTP/1.1";
+    req.body = "";
+    req.content_type = "text/html";
+    req.user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:78.0)";
+    req.authorization = "";
+    req.query = "name=value";
+    req.cgi_path = "/cgi-bin/test.py";
+    return req;
 }
 
 int main(int argc, char** argv) 
