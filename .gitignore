@@ -60,5 +60,4 @@ dkms.conf
 docs/*.pdf
 
 # Other
-.vscode/settings.json
 bin/*
