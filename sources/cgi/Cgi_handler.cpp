@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 13:00:11 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/23 10:46:50 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/23 11:36:28 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,17 @@ Cgi_handler::Cgi_handler() {
 
 Cgi_handler::Cgi_handler(Request cgi_request) : cgi_request(cgi_request) 
 {
+    int i;
     std::string test;
     this->create_env_vars();
     char **env_vars = this->create_env_vars_array(this->env_vars);
     this->response_body = exec_cgi(this->cgi_request.cgi_path, env_vars);
+    i = 0;
+    while (env_vars[i])
+    {
+        delete[] env_vars[i];
+        i++;
+    }
     delete [] env_vars;
     std::cout << this->response_body << std::endl;
 }
