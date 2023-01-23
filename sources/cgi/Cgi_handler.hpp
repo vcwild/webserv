@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 12:56:36 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/23 10:51:56 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/23 11:38:21 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class Cgi_handler {
     Cgi_handler();
     Cgi_handler(Request cgi_request);
     void create_env_vars();
+    std::string get_response_body();
     ~Cgi_handler();
     char ** create_env_vars_array(std::map<std::string,std::string>& env_vars);
     std::string exec_cgi(std::string cgi_script_path, char ** env_vars_array);

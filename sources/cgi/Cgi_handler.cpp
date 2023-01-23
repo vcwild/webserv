@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 13:00:11 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/23 11:36:28 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/23 11:38:12 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,4 +144,9 @@ std::string Cgi_handler::exec_cgi(std::string cgi_script_path, char **env_vars)
         exit(0);
 
     return (new_body);
+}
+
+std::string Cgi_handler::get_response_body()
+{
+    return (this->response_body);
 }
