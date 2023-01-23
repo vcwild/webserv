@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/github/languages/count/vcwild/webserv?color=%234466fb&style=flat-square" alt="languages" />
   <img src="https://img.shields.io/github/license/vcwild/webserv?color=%234466fb&style=flat-square" alt="license" />
   <img src="https://img.shields.io/github/repo-size/vcwild/webserv?color=%234466fb&style=flat-square" alt="repo size" />
-  <img src="https://img.shields.io/github/workflow/status/vcwild/webserv/complete-checking?style=flat-square&color=%234466fb" alt="build" />
+  <img src="https://img.shields.io/github/actions/workflow/status/vcwild/webserv/build.yml?branch=main&style=flat-square&color=%234466fb" alt="build" />
 </div>
 
 # Webserv
