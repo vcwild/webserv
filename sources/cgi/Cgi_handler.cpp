@@ -6,11 +6,13 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 13:00:11 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/23 09:26:31 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/23 10:46:50 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Cgi_handler.hpp"
+
+#define CGI_BUFSIZE 8192
 
 Cgi_handler::Cgi_handler() {
 
@@ -18,12 +20,12 @@ Cgi_handler::Cgi_handler() {
 
 Cgi_handler::Cgi_handler(Request cgi_request) : cgi_request(cgi_request) 
 {
+    std::string test;
     this->create_env_vars();
     char **env_vars = this->create_env_vars_array(this->env_vars);
-    //print vars:
-    for (int i = 0; env_vars[i]; i++) {
-        std::cout << env_vars[i] << std::endl;
-    }
+    this->response_body = exec_cgi(this->cgi_request.cgi_path, env_vars);
+    delete [] env_vars;
+    std::cout << this->response_body << std::endl;
 }
 
 Cgi_handler::~Cgi_handler() {
@@ -73,4 +75,66 @@ char **Cgi_handler::create_env_vars_array(std::map<std::string, std::string>& en
     }
     result[size] = 0;
     return result;
+}
+
+std::string Cgi_handler::exec_cgi(std::string cgi_script_path, char **env_vars)
+{
+    int pid;
+    int pipe_stdin[2];
+    int pipe_stdout[2];
+    std::string new_body; 
+
+    if (pipe(pipe_stdin) == -1 || pipe(pipe_stdout) == -1) 
+    {
+        perror("pipe");
+    }
+
+    pid = fork();
+
+    if (pid == -1) 
+    {
+        std::cerr << "Fork failed." << std::endl;
+        return ("Status: 500\r\n\r\n");
+    }
+    else if (!pid) 
+    {
+        // Child process
+        close(pipe_stdin[1]);
+        close(pipe_stdout[0]);
+
+        dup2(pipe_stdin[0], STDIN_FILENO);
+        dup2(pipe_stdout[1], STDOUT_FILENO);
+
+        char *argv[] = { NULL };
+        execve(cgi_script_path.c_str(), argv, env_vars);
+        std::cerr << "Error: execve failed with error code: " << strerror(errno) << std::endl;
+        write(STDOUT_FILENO, "Status: 500\r\n\r\n", 15);
+    }
+    else {
+        // Parent process
+        close(pipe_stdin[0]);
+        close(pipe_stdout[1]);
+
+        // Write request body to pipe for stdin
+        write(pipe_stdin[1], cgi_request.body.c_str(), cgi_request.body.size());
+        close(pipe_stdin[1]);
+
+        // Read from pipe for stdout
+        char buffer[CGI_BUFSIZE] = {0};
+        int ret = 1;
+        while (ret > 0) {
+            memset(buffer, 0, CGI_BUFSIZE);
+            ret = read(pipe_stdout[0], buffer, CGI_BUFSIZE - 1);
+            new_body += buffer;
+        }
+        close(pipe_stdout[0]);
+
+        waitpid(-1, NULL, 0);
+    }
+
+
+    if (!pid)
+        exit(0);
+
+    return (new_body);
 }

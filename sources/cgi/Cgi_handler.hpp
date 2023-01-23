@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 12:56:36 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/23 09:16:05 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/23 10:46:35 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,19 +20,15 @@ class Cgi_handler {
   private:
     Request cgi_request;
     std::map<std::string, std::string> env_vars; // environment variables for the CGI process
-    std::string cgi_path; // path to the CGI executable - /usr/bin/python3 or path to php cgi. 
-    pid_t cgi_pid; // process ID of the CGI process
-    int exit_status; // exit status of the CGI process
-   
-
+    std::string response_body; // new body to be sent to the client
 
   public:
     Cgi_handler();
     Cgi_handler(Request cgi_request);
     void create_env_vars();
-    char **create_env_vars_arra();
     ~Cgi_handler();
     char ** create_env_vars_array(std::map<std::string,std::string>& env_vars);
+    std::string exec_cgi(std::string cgi_script_path, char ** env_vars_array);
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/02 09:44:34 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/23 09:14:41 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/23 10:25:15 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ Request createSampleRequest() {
     req.user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:78.0)";
     req.authorization = "";
     req.query = "name=value";
-    req.cgi_path = "/cgi-bin/test.py";
+    req.cgi_path = "./cgi-bin/basic.py";
     return req;
 }
 

@@ -1,16 +1,17 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
-import datetime
+import os
 
 print("Content-type: text/html")
 print()
+
 print("<html>")
 print("<head>")
-print("<title>Python CGI Script</title>")
+print("<title>CGI Script</title>")
 print("</head>")
 print("<body>")
-print("<h1>Current Date and Time</h1>")
-print("<p>", datetime.datetime.now(), "</p>")
+print("<h1>CGI Script</h1>")
+print("<p>SCRIPT_NAME: " + os.environ["SCRIPT_NAME"] + "</p>")
+print("<p>PATH_INFO: " + os.environ["PATH_INFO"] + "</p>")
 print("</body>")
 print("</html>")
-
