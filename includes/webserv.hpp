@@ -18,10 +18,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
+#include <map>
 
 struct Route
 {
-    std::vector<std::string> allowed_methods;
+    std::vector<std::string> allowed_method;
     std::string              root;
     std::string              index;
     std::vector<std::string> cgi;

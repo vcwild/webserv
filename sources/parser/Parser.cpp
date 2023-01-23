@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/02 09:43:44 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/17 09:45:31 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/23 09:19:43 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int Parser::parse() {
                 std::string value;
                 while (line_stream >> value)
                 {
-                    current_route.allowed_methods.push_back(value);
+                    current_route.allowed_method.push_back(value);
                 }
             }
             else if (key == "root")
@@ -153,7 +153,7 @@ int Parser::parse() {
         std::string value;
         while (line_stream >> value)
         {
-            current_server.index_files.push_back(value);
+            current_server.index.push_back(value);
         }
         }
         else if (key == "allowed_method")
@@ -161,7 +161,7 @@ int Parser::parse() {
             std::string value;
             while (line_stream >> value)
             {
-                current_server.allowed_methods.push_back(value);
+                current_server.allowed_method.push_back(value);
             }
         }
         else if (key == "root") 
@@ -176,7 +176,7 @@ int Parser::parse() {
         std::string value;
         line_stream >> value;
         if (!value.empty())
-            current_server.error_pages.push_back(value);
+            current_server.error_page.push_back(value);
         }
         }
     }

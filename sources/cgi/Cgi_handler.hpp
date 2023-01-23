@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cgi_handler.hpp                                    :+:      :+:    :+:   */
+/*   Cgi_handler.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 12:56:36 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/18 17:09:37 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/23 09:16:05 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,9 @@ class Cgi_handler {
     Cgi_handler();
     Cgi_handler(Request cgi_request);
     void create_env_vars();
-    char **create_env_vars_array();
+    char **create_env_vars_arra();
     ~Cgi_handler();
+    char ** create_env_vars_array(std::map<std::string,std::string>& env_vars);
 };
 
 #endif

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cgi_handler.cpp                                    :+:      :+:    :+:   */
+/*   Cgi_handler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 13:00:11 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/18 17:50:30 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/23 09:26:31 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ Cgi_handler::Cgi_handler() {
 Cgi_handler::Cgi_handler(Request cgi_request) : cgi_request(cgi_request) 
 {
     this->create_env_vars();
-    char **env_vars = this->create_env_vars_array();
+    char **env_vars = this->create_env_vars_array(this->env_vars);
+    //print vars:
     for (int i = 0; env_vars[i]; i++) {
         std::cout << env_vars[i] << std::endl;
     }
@@ -37,7 +38,7 @@ For example, if the script is located at "/var/www/html/cgi-bin/myscript.php" th
 
 void Cgi_handler::create_env_vars()
 {
-    //https://github.com/cclaude42/webserv/blob/master/srcs/cgi/CgiHandler.cpp
+   
     this->env_vars["AUTH_TYPE"] = cgi_request.authorization;
     this->env_vars["REDIRECT_STATUS"] = "200"; 
 	this->env_vars["GATEWAY_INTERFACE"] = "CGI/1.1";
@@ -58,7 +59,7 @@ void Cgi_handler::create_env_vars()
 	this->env_vars["SERVER_SOFTWARE"] = "Weebserv/1.0";
 }
 
-char **Cgi_handler::create_env_vars_array(td::map<std::string, std::string>& env_vars)
+char **Cgi_handler::create_env_vars_array(std::map<std::string, std::string>& env_vars)
 {
     int size = env_vars.size();
     char** result = new char*[size + 1];
@@ -67,10 +68,9 @@ char **Cgi_handler::create_env_vars_array(td::map<std::string, std::string>& env
     for (it = env_vars.begin(); it != env_vars.end(); it++) {
         std::string env_var = it->first + "=" + it->second;
         result[i] = new char[env_var.length() + 1];
-        std::strcpy(result[i], env_var.c_str());
+        strcpy(result[i], env_var.c_str());
         i++;
     }
     result[size] = 0;
     return result;
-}
 }
