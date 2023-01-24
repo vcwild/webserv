@@ -6,18 +6,10 @@ examples/parser/readlines.cpp sources/parsers/default/parser.cpp -I includes/
 #include "parsers.hpp"
 #include <iostream>
 
-int main()
+static void testParseKey( vector<string> &lines, const string &key )
 {
-    string file = readFile( "config/config.conf" );
-    // split newlines as new strings
-
-    vector<string> lines = readTidyLines( file );
-
-    vector<string> tmpLines = trimLines( lines );
-
-    vector<string>::iterator it = tmpLines.begin();
-
-    vector<vector<string> > servers = splitLines( lines, "server {", true );
+    cout << "Parsing key: " << key << endl;
+    vector<vector<string> > servers = splitLines( lines, key, true );
 
     vector<vector<string> >::iterator it2 = servers.begin();
 
@@ -30,6 +22,19 @@ int main()
         cout << "------------------" << endl;
         ++it2;
     }
+}
+
+int main()
+{
+    string file = readFile( "config/config.conf" );
+    // split newlines as new strings
+
+    vector<string> lines = readTidyLines( file );
+
+    vector<string> tmpLines = trimLines( lines );
+
+    testParseKey( lines, "server {" );
+    testParseKey( lines, "location " );
 
     return 0;
 }
