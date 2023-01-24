@@ -67,14 +67,12 @@ splitLines( vector<string> &lines, string key, bool useBrackets )
     vector<vector<string> >  servers;
     vector<string>::iterator it = lines.begin();
 
-    while ( it != lines.end() ) {
+    while ( it != lines.end() && count ) {
         while ( it != lines.end() ) {
             if ( it->find( key ) != string::npos )
                 break;
             ++it;
         }
-        if ( count == 0 )
-            break;
         vector<string> server;
 
         while ( it != lines.end() ) {
@@ -82,11 +80,10 @@ splitLines( vector<string> &lines, string key, bool useBrackets )
             ++it;
             if ( it == lines.end() || ( it->find( key ) != string::npos ) )
                 break;
-            if ( useBrackets )
-                if ( it->find( "}" ) != string::npos ) {
-                    server.push_back( *it );
-                    break;
-                }
+            if ( useBrackets && ( it->find( "}" ) != string::npos ) ) {
+                server.push_back( *it );
+                break;
+            }
         }
         servers.push_back( server );
         --count;
