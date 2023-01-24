@@ -4,6 +4,18 @@
 #include <string>
 #include <vector>
 
+/* Definitions */
+#define LISTEN_PORT_KEY "listen"
+#define SERVER_NAME_KEY "server_name"
+#define CLIENT_MAX_BODY_SIZE_KEY "client_max_body_size"
+#define INDEX_KEY "index"
+#define ALLOWED_METHOD_KEY "allowed_method"
+#define ERROR_PAGE_KEY "error_page"
+#define AUTOINDEX_KEY "autoindex"
+#define ROUTE_KEY "location"
+#define ROOT_KEY "root"
+
+/* Structs */
 struct Route
 {
     std::vector<std::string> allowed_methods;
