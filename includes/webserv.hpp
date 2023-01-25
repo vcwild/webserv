@@ -2,6 +2,7 @@
 #define WEBSERV_H
 
 #include "parsers.hpp"
+#include <map>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -23,7 +24,7 @@
 /* Structs */
 struct Route
 {
-    std::vector<std::string> allowed_methods;
+    std::vector<std::string> allow_methods;
     std::string              root;
     std::string              index;
     std::vector<std::string> cgi;
@@ -115,7 +116,7 @@ struct Config
                     != std::string::npos ) {
             route.http_redirection = handleVectorKey( line );
         } else if ( ( line ).find( ALLOW_METODS_KEY ) != std::string::npos ) {
-            route.allowed_methods = handleVectorKey( line );
+            route.allow_methods = handleVectorKey( line );
         } else if ( ( line ).find( ROUTE_KEY ) != std::string::npos ) {
             std::string tmp = handleKey( line );
 
@@ -159,6 +160,9 @@ struct Request
     std::string body; // request body
     std::string content_type; // text/html
     std::string user_agent; // Mozilla/5.0 (X11; Linux x86_64; rv:78.0)
+    std::string authorization;
+    std::string query;
+    std::string cgi_path;
 };
 
 struct Response
@@ -171,7 +175,6 @@ struct Response
     std::string body;
 };
 
-/* Functions */
-vector<Config> parseConfig( string filename );
+std::vector<Config> parseConfig( string filename );
 
 #endif

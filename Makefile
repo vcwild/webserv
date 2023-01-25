@@ -1,6 +1,6 @@
 NAME = webserv
 CXX = clang++
-CXXFLAGS =  -Wall -Wextra -std=c++98 -I$(INCLUDES_PATH)
+CXXFLAGS =  -Wall -Wextra -Werror -std=c++98 -I$(INCLUDES_PATH)
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
 
 # **************************************************************************** #
@@ -53,7 +53,8 @@ OBJ_FILES = $(CPP_FILES:$(SOURCES_PATH)/%.cpp=$(OBJECTS_PATH)/%.o)
 all: $(NAME)
 
 $(NAME): $(OBJ_FILES)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	mkdir -p bin
+	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
 $(OBJECTS_PATH)/%.o: $(SOURCES_PATH)/%.cpp
 	mkdir -p $(dir $@)

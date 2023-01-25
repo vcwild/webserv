@@ -29,8 +29,8 @@ MU_TEST( test_check_config_parser )
             mu_assert_string_eq( route.location_dir.c_str(), "/teste" );
             mu_assert_string_eq( route.root.c_str(), "./root" );
             mu_assert_string_eq( route.index.c_str(), "teste.html" );
-            mu_assert_string_eq( route.allowed_methods[0].c_str(), "POST" );
-            mu_assert_string_eq( route.allowed_methods[1].c_str(), "GET" );
+            mu_assert_string_eq( route.allow_methods[0].c_str(), "POST" );
+            mu_assert_string_eq( route.allow_methods[1].c_str(), "GET" );
             mu_assert_string_eq( route.autoindex.c_str(), "off" );
             mu_assert_string_eq( route.cgi[0].c_str(), ".php" );
             mu_assert_string_eq( route.cgi[1].c_str(),
@@ -40,8 +40,8 @@ MU_TEST( test_check_config_parser )
             Route route = config.routes[1];
 
             mu_assert_string_eq( route.location_dir.c_str(), "/teste2" );
-            mu_assert_string_eq( route.allowed_methods[0].c_str(), "POST" );
-            mu_assert_string_eq( route.allowed_methods[1].c_str(), "GET" );
+            mu_assert_string_eq( route.allow_methods[0].c_str(), "POST" );
+            mu_assert_string_eq( route.allow_methods[1].c_str(), "GET" );
         }
     }
     {
@@ -64,8 +64,8 @@ MU_TEST( test_check_config_parser )
             mu_assert_string_eq( route.location_dir.c_str(), "/teste" );
             mu_assert_string_eq( route.root.c_str(), "./root" );
             mu_assert_string_eq( route.index.c_str(), "teste.html" );
-            mu_assert_string_eq( route.allowed_methods[0].c_str(), "POST" );
-            mu_assert_string_eq( route.allowed_methods[1].c_str(), "GET" );
+            mu_assert_string_eq( route.allow_methods[0].c_str(), "POST" );
+            mu_assert_string_eq( route.allow_methods[1].c_str(), "GET" );
             mu_assert_string_eq( route.autoindex.c_str(), "off" );
             mu_assert_string_eq( route.cgi[0].c_str(), ".php" );
             mu_assert_string_eq( route.cgi[1].c_str(),
@@ -75,8 +75,8 @@ MU_TEST( test_check_config_parser )
             Route route = config.routes[1];
 
             mu_assert_string_eq( route.location_dir.c_str(), "/teste2" );
-            mu_assert_string_eq( route.allowed_methods[0].c_str(), "POST" );
-            mu_assert_string_eq( route.allowed_methods[1].c_str(), "GET" );
+            mu_assert_string_eq( route.allow_methods[0].c_str(), "POST" );
+            mu_assert_string_eq( route.allow_methods[1].c_str(), "GET" );
         }
     }
 }
