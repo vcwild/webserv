@@ -17,6 +17,8 @@
 
 ## References
 
+- [How to server-client sockets in C++](https://www.bogotobogo.com/cplusplus/sockets_server_client.php)
+
 ## License
 
 This project is licensed under the Affero General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
