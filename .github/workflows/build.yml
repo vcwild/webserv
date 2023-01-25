@@ -7,13 +7,13 @@ on:
     branches: [main]
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Compile the program
-  #       run: |
-  #         make
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Compile the program
+        run: |
+          make
   test:
     runs-on: ubuntu-latest
     steps:

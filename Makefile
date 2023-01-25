@@ -53,7 +53,8 @@ OBJ_FILES = $(CPP_FILES:$(SOURCES_PATH)/%.cpp=$(OBJECTS_PATH)/%.o)
 all: $(NAME)
 
 $(NAME): $(OBJ_FILES)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	mkdir -p bin
+	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
 $(OBJECTS_PATH)/%.o: $(SOURCES_PATH)/%.cpp
 	mkdir -p $(dir $@)
