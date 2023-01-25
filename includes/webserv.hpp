@@ -1,26 +1,9 @@
 #ifndef WEBSERV_H
 #define WEBSERV_H
 
-#include <arpa/inet.h>
-#include <cstdlib>
-#include <errno.h>
-#include <fcntl.h>
-#include <fstream>
-#include <iostream>
-#include <netinet/in.h>
-#include <ostream>
-#include <poll.h>
-#include <sstream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <string>
-#include <sys/socket.h>
-#include <unistd.h>
 #include <vector>
 #include <map>
-#include <unistd.h>
-#include <sys/wait.h>
 
 struct Route
 {

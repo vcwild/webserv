@@ -1,14 +1,14 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    oficial_main                                       :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/01/02 09:44:34 by mvieira-          #+#    #+#              #
-#    Updated: 2023/01/23 09:19:43 by mvieira-         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/01/02 09:44:34 by mvieira-          #+#    #+#             */
+/*   Updated: 2023/01/25 10:38:54 by mvieira-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "webserv.hpp"
 #include "./server/Server.hpp"
@@ -16,7 +16,7 @@
 #include "./cgi/Cgi_handler.hpp"
 
 void print_config(std::vector<Config> servers_confs) {
-    std::vector<Config>::iterator config = servers_confs.begin();
+std::vector<Config>::iterator config = servers_confs.begin();
 while (config != servers_confs.end())
 {
 std::cout << "------------------NEW SERVER------------------" << std::endl; 

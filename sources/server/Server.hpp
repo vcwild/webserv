@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/02 09:28:15 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/09 11:08:43 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/25 10:59:38 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,15 @@
 #define SERVER_HPP
 
 #include "webserv.hpp"
+#include <iostream>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <poll.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <string.h>
+#include <fcntl.h>
+#include <cerrno>
 
 class Server {
 

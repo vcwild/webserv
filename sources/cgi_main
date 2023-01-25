@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/02 09:44:34 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/23 10:25:15 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/25 09:55:54 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include "./server/Server.hpp"
 #include "./parser/Parser.hpp"
 #include "./cgi/Cgi_handler.hpp"
-
 
 Request createSampleRequest() {
     Request req;

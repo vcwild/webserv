@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 12:56:36 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/23 11:38:21 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/25 11:03:47 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 #define CGI_HANDLER_HPP
 
 #include "webserv.hpp"
+#include <errno.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <iostream>
+#include <cstring>
+#include <stdio.h>
+#include <cstdlib>
+
 
 class Cgi_handler {
 
