@@ -67,7 +67,7 @@ test:
 
 parsers:
 	@mkdir -p bin
-	@$(CXX) $(CXXFLAGS) -I $(INCLUDES_PATH) ./sources/parsers/default/parser.cpp ./tests/$@.cpp -o bin/$@
+	@$(CXX) $(CXXFLAGS) -I $(INCLUDES_PATH) ./sources/parsers/default/parser.cpp ./sources/parsers/default/config.cpp ./tests/$@.cpp -o bin/$@
 	@./bin/$@
 
 clean:
