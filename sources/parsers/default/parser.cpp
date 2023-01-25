@@ -1,5 +1,26 @@
-#include "parsers.hpp"
+#include "webserv.hpp"
 #include <algorithm>
+
+string handleKey( string &line ) { return line.substr( line.find( " " ) + 1 ); }
+
+static vector<string> split( string str, string delim )
+{
+    vector<string> result;
+    size_t         pos = 0;
+    string         token;
+    while ( ( pos = str.find( delim ) ) != string::npos ) {
+        token = str.substr( 0, pos );
+        result.push_back( token );
+        str.erase( 0, pos + delim.length() );
+    }
+    result.push_back( str );
+    return result;
+}
+
+vector<string> handleVectorKey( string &line )
+{
+    return split( line.substr( line.find( " " ) + 1 ), " " );
+}
 
 string readFile( const string &fileName )
 {
@@ -14,7 +35,7 @@ string readFile( const string &fileName )
     return string( bytes.data(), fileSize );
 }
 
-static inline std::string &ltrim( std::string &s )
+static inline string &ltrim( string &s )
 {
     s.erase(
         s.begin(),
@@ -31,7 +52,16 @@ static inline string &rtrim( string &s )
     return s;
 }
 
-static inline string &trim( string &s ) { return ltrim( rtrim( s ) ); }
+static inline string &removeElements( string &s )
+{
+    s.erase( remove( s.begin(), s.end(), ';' ), s.end() );
+    return s;
+}
+
+static inline string &trim( string &s )
+{
+    return removeElements( ltrim( rtrim( s ) ) );
+}
 
 vector<string> readLines( string &str )
 {
@@ -64,7 +94,7 @@ splitLines( vector<string> &lines, string key, bool useBrackets )
     if ( count == 1 )
         return vector<vector<string> >( 1, lines );
 
-    vector<vector<string> >  servers;
+    vector<vector<string> >  items;
     vector<string>::iterator it = lines.begin();
 
     while ( it != lines.end() && count ) {
@@ -73,22 +103,22 @@ splitLines( vector<string> &lines, string key, bool useBrackets )
                 break;
             ++it;
         }
-        vector<string> server;
+        vector<string> item;
 
         while ( it != lines.end() ) {
-            server.push_back( *it );
+            item.push_back( *it );
             ++it;
             if ( it == lines.end() || ( it->find( key ) != string::npos ) )
                 break;
             if ( useBrackets && ( it->find( "}" ) != string::npos ) ) {
-                server.push_back( *it );
+                item.push_back( *it );
                 break;
             }
         }
-        servers.push_back( server );
+        items.push_back( item );
         --count;
     }
-    return servers;
+    return items;
 }
 
 vector<string> trimLines( vector<string> &lines )
@@ -109,4 +139,23 @@ vector<string> readTidyLines( string &str )
 {
     vector<string> lines = readLines( str );
     return trimLines( lines );
+}
+
+vector<Config> parseConfig( string filename )
+{
+    string                  file     = readFile( filename );
+    vector<string>          lines    = readTidyLines( file );
+    vector<string>          tmpLines = trimLines( lines );
+    vector<vector<string> > servers  = splitLines( tmpLines, "server ", false );
+    vector<vector<string> >::iterator it2 = servers.begin();
+    vector<Config>                    serversConfig;
+
+    while ( it2 != servers.end() ) {
+        vector<string>::iterator it3 = it2->begin();
+        vector<string>::iterator it4 = it2->end();
+        Config                   config( it3, it4 );
+        ++it2;
+        serversConfig.push_back( config );
+    }
+    return serversConfig;
 }

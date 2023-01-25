@@ -6,6 +6,9 @@
 
 using namespace std;
 
+string         handleKey( string &line );
+vector<string> handleVectorKey( string &line );
+
 string         readFile( const string &fileName );
 vector<string> readLines( string &str );
 vector<string> trimLines( vector<string> &lines );

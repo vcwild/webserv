@@ -3,38 +3,27 @@ g++ -g3 -std=c++98 \
 examples/parser/readlines.cpp sources/parsers/default/parser.cpp -I includes/
 */
 
-#include "parsers.hpp"
+#include "webserv.hpp"
 #include <iostream>
 
 static void testParseKey( vector<string> &lines, const string &key )
 {
-    cout << "Parsing key: " << key << endl;
-    vector<vector<string> > servers = splitLines( lines, key, true );
+    vector<vector<string> > servers = splitLines( lines, key, false );
 
     vector<vector<string> >::iterator it2 = servers.begin();
-
+    vector<Config>                    configs;
     while ( it2 != servers.end() ) {
         vector<string>::iterator it3 = it2->begin();
-        while ( it3 != it2->end() ) {
-            cout << *it3 << endl;
-            ++it3;
-        }
-        cout << "------------------" << endl;
+        vector<string>::iterator it4 = it2->end();
+        Config                   config( it3, it4 );
+
         ++it2;
+        configs.push_back( config );
     }
 }
 
 int main()
 {
-    string file = readFile( "config/config.conf" );
-    // split newlines as new strings
-
-    vector<string> lines = readTidyLines( file );
-
-    vector<string> tmpLines = trimLines( lines );
-
-    testParseKey( lines, "server {" );
-    testParseKey( lines, "location " );
-
+    vector<Config> conf = parseConfig( "config/config.conf" );
     return 0;
 }
