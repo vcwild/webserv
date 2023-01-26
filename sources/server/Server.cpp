@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/03 10:16:53 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/26 16:40:52 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/26 16:58:29 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,14 @@ static void signal_handler( int sign )
     std::cout << "Signal received: " << sign << std::endl;
 }
 
-Server::Server() : running( true )
-{
-   
-}
+Server::Server() : running( true ) {}
 
-Server::Server(const Server & src)
+Server::Server( const Server &src ) { *this = src; }
+
+Server &Server::operator=( const Server &src )
 {
-	*this = src;
+    ( void ) src;
+    return ( *this );
 }
 
 Server::Server( std::vector<Config> servers_conf ) : running( true )
@@ -33,10 +33,7 @@ Server::Server( std::vector<Config> servers_conf ) : running( true )
     this->start();
 }
 
-Server::~Server()
-{
-    
-}
+Server::~Server() {}
 
 int Server::start()
 {
@@ -58,8 +55,7 @@ int Server::create_sockets()
 
         // create a new socket
         int sockfd = socket( AF_INET, SOCK_STREAM, 0 );
-        if ( sockfd < 0 ) 
-        {
+        if ( sockfd < 0 ) {
             std::cerr << "Error creating socket" << std::endl;
             return 1;
         }
@@ -95,7 +91,6 @@ int Server::create_sockets()
     return 0;
 }
 
-
 void Server::accept_connections()
 {
     int           n_fds = this->sockets.size();
@@ -103,13 +98,12 @@ void Server::accept_connections()
 
     signal( SIGINT, signal_handler );
 
-    
     while ( this->running ) {
         for ( int i = 0; i < n_fds; i++ ) {
-        poll_fds[i].fd     = this->sockets[i];
-        poll_fds[i].events = POLLIN;
-    }
-        int ret = poll( poll_fds, n_fds, 5000);
+            poll_fds[i].fd     = this->sockets[i];
+            poll_fds[i].events = POLLIN;
+        }
+        int ret = poll( poll_fds, n_fds, 5000 );
         if ( ret < 0 ) {
             // there was an error with the poll function
             std::cerr << "Error with poll function" << std::endl;
@@ -126,14 +120,18 @@ void Server::accept_connections()
                     socklen_t          clilen = sizeof(
                         cli_addr ); // store the size of the client adress
                     // accept create a new socket!
-                    int connection_socket = accept(
-                        server_socket, ( struct sockaddr * ) &cli_addr, &clilen );
+                    int connection_socket
+                        = accept( server_socket,
+                                  ( struct sockaddr * ) &cli_addr,
+                                  &clilen );
                     if ( connection_socket < 0 ) {
                         // there was an error accepting the connection
                         std::cerr << "Error accepting connection" << std::endl;
                     } else {
-                        this->read_request_data(connection_socket, 1024);
-                        std::cout << "Request Buff" << std::endl << this->requests[connection_socket] << std::endl;
+                        this->read_request_data( connection_socket, 1024 );
+                        std::cout << "Request Buff" << std::endl
+                                  << this->requests[connection_socket]
+                                  << std::endl;
                         // handle request!
                         // send a response based on the request!
                         this->send_basic_response( connection_socket );
@@ -145,7 +143,7 @@ void Server::accept_connections()
     }
 }
 
-int Server::read_request_data( int socket, int request_size)
+int Server::read_request_data( int socket, int request_size )
 {
     char request_buf[request_size]; // buffer to store the request data
     int  bytes_received = recv( socket, request_buf, request_size, 0 );
@@ -153,16 +151,15 @@ int Server::read_request_data( int socket, int request_size)
     // check for errors
     if ( bytes_received < 0 ) {
         std::cerr << "Error reading from connection" << std::endl;
-        close(socket);
+        close( socket );
         return 1;
     }
-    if (bytes_received == 0) {
+    if ( bytes_received == 0 ) {
         std::cerr << "Connection closed" << std::endl;
-        close(socket);
+        close( socket );
         return 1;
     }
-    if (bytes_received > 0)
-    {
+    if ( bytes_received > 0 ) {
         this->requests[socket] = request_buf;
     }
     return ( 0 );
@@ -172,20 +169,18 @@ int Server::handle_request_data() { return ( 0 ); }
 
 int Server::send_basic_response( int socketfd )
 {
-    const char *response = "HTTP/1.1 200 OK\nContent-Type: "
-                           "text/html\nContent-Length: 11\n\nHello World";
-    int bytes_sent = send( socketfd, response, strlen( response ), 0 );
-    if ( bytes_sent == -1 ) 
-    {
-        std::cout << "send: -1 error"<< std::endl;
-        close(socketfd);
+    const char *response   = "HTTP/1.1 200 OK\nContent-Type: "
+                             "text/html\nContent-Length: 11\n\nHello World";
+    int         bytes_sent = send( socketfd, response, strlen( response ), 0 );
+    if ( bytes_sent == -1 ) {
+        std::cout << "send: -1 error" << std::endl;
+        close( socketfd );
         return ( 1 );
     }
-    if ( bytes_sent == 0 ) 
-    {
-        std::cout << "send: 0 error"<< std::endl;
-        close(socketfd);
-        return ( 1 );  
+    if ( bytes_sent == 0 ) {
+        std::cout << "send: 0 error" << std::endl;
+        close( socketfd );
+        return ( 1 );
     }
     return ( 0 );
 }
@@ -199,8 +194,4 @@ void Server::close_sockets_fd()
     }
 }
 
-void Server::stop() 
-{ 
-    close_sockets_fd(); 
-}
-
+void Server::stop() { close_sockets_fd(); }

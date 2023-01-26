@@ -18,20 +18,20 @@
 class Server {
 
 private:
-    std::vector<Config> servers_conf;
-    std::vector<int>    sockets;
-    std::map<int, std::string>	requests;
-    bool                running;
+    std::vector<Config>        servers_conf;
+    std::vector<int>           sockets;
+    std::map<int, std::string> requests;
+    bool                       running;
 
 public:
     Server();
     Server( std::vector<Config> servers_conf );
-    Server(const Server & src);
-    //Server & operator=(const Server & src);
+    Server( const Server &src );
+    Server &operator=( const Server &src );
     ~Server();
     int  start();
     int  create_sockets();
-    int  read_request_data( int socket , int request_size);
+    int  read_request_data( int socket, int request_size );
     int  send_basic_response( int socketfd );
     int  handle_request_data();
     void accept_connections();
