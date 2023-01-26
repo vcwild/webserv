@@ -7,20 +7,6 @@
 #include <string>
 #include <vector>
 
-/* Definitions */
-#define LISTEN_PORT_KEY "listen"
-#define SERVER_NAME_KEY "server_name"
-#define CLIENT_MAX_BODY_SIZE_KEY "client_max_body_size"
-#define INDEX_KEY "index"
-#define ALLOWED_METHOD_KEY "allowed_method"
-#define ERROR_PAGE_KEY "error_page"
-#define AUTOINDEX_KEY "autoindex"
-#define ROUTE_KEY "location"
-#define ROOT_KEY "root"
-#define CGI_KEY "cgi"
-#define HTTP_REDIRECTION_KEY "http_redirection"
-#define ALLOW_METODS_KEY "allow_methods"
-
 /* Structs */
 struct Route
 {
@@ -65,10 +51,24 @@ struct Request
     std::string version; // HTTP/1.1
     std::string body; // request body
     std::string content_type; // text/html
+    std::string content_length;
     std::string user_agent; // Mozilla/5.0 (X11; Linux x86_64; rv:78.0)
     std::string authorization;
+    std::string accept;
     std::string query;
     std::string cgi_path;
+
+    Request();
+
+    Request( char *buf );
+
+    void setMethod( std::string &line );
+    void setHost( std::string &line );
+    void setUserAgent( std::string &line );
+    void setAccept( std::string &line );
+    void setConcentLength( std::string &line );
+    void setContentType( std::string &line );
+    void setBody( std::string &line );
 };
 
 struct Response
