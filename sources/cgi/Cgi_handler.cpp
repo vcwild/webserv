@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Cgi_handler.cpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/18 13:00:11 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/25 12:14:01 by mvieira-         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Cgi_handler.hpp"
 
 #define CGI_BUFSIZE 8192
@@ -53,8 +41,8 @@ void Cgi_handler::create_env_vars()
     this->env_vars["SCRIPT_FILENAME"]   = cgi_request.cgi_path;
     this->env_vars["REQUEST_METHOD"]    = cgi_request.method;
     this->env_vars["CONTENT_LENGTH"] = cgi_request.body; // Converter para char*
-    this->env_vars["CONTENT_TYPE"]    = cgi_request.content_type;
-    this->env_vars["PATH_INFO"]       = cgi_request.cgi_path;
+    this->env_vars["CONTENT_TYPE"]   = cgi_request.content_type;
+    this->env_vars["PATH_INFO"]      = cgi_request.cgi_path;
     this->env_vars["PATH_TRANSLATED"] = cgi_request.cgi_path;
     this->env_vars["QUERY_STRING"]    = cgi_request.query;
     this->env_vars["REMOTEaddr"]      = cgi_request.port;

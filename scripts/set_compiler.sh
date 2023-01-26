@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ -f "/etc/redhat-release" ]
-	then return=$"c++"
+	then return=$"g++"
 elif [ -f "/etc/debian_version" ]
 	then return="c++"
 else return="c++"

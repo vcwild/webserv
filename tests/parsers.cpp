@@ -1,4 +1,3 @@
-#include "parsers.hpp"
 #include "minunit.h"
 #include "webserv.hpp"
 
@@ -81,7 +80,74 @@ MU_TEST( test_check_config_parser )
     }
 }
 
-MU_TEST_SUITE( suite_name ) { MU_RUN_TEST( test_check_config_parser ); }
+MU_TEST( test_check_get_request_parser )
+{
+    char    str[] = "GET / HTTP/1.1\r\nHost: localhost:9000\r\nUser-Agent: "
+                    "curl/7.82.0\r\nAccept: */*\r\n\r\n";
+    Request request( str );
+
+    mu_assert_string_eq( request.method.c_str(), "GET" );
+    mu_assert_string_eq( request.uri.c_str(), "/" );
+    mu_assert_string_eq( request.version.c_str(), "HTTP/1.1" );
+    mu_assert_string_eq( request.host.c_str(), "localhost" );
+    mu_assert_string_eq( request.port.c_str(), "9000" );
+    mu_assert_string_eq( request.user_agent.c_str(), "curl/7.82.0" );
+    mu_assert_string_eq( request.accept.c_str(), "*/*" );
+    mu_assert_string_eq( request.content_type.c_str(), "" );
+    mu_assert_string_eq( request.content_length.c_str(), "" );
+    mu_assert_string_eq( request.body.c_str(), "" );
+}
+
+MU_TEST( test_check_post_request_parser )
+{
+    char    str[] = "POST / HTTP/1.1\r\nHost: localhost:8000\r\nUser-Agent: "
+                    "curl/7.82.0\r\nAccept: */*\r\nContent-Type: "
+                    "application/json\r\nContent-Length: "
+                    "34\r\n\r\n{\"key1\":\"value1\", \"key2\":\"value2\"}";
+    Request request( str );
+
+    mu_assert_string_eq( request.method.c_str(), "POST" );
+    mu_assert_string_eq( request.uri.c_str(), "/" );
+    mu_assert_string_eq( request.version.c_str(), "HTTP/1.1" );
+    mu_assert_string_eq( request.host.c_str(), "localhost" );
+    mu_assert_string_eq( request.port.c_str(), "8000" );
+    mu_assert_string_eq( request.user_agent.c_str(), "curl/7.82.0" );
+    mu_assert_string_eq( request.accept.c_str(), "*/*" );
+    mu_assert_string_eq( request.content_type.c_str(), "application/json" );
+    mu_assert_string_eq( request.content_length.c_str(), "34" );
+    mu_assert_string_eq( request.body.c_str(),
+                         "{\"key1\":\"value1\", \"key2\":\"value2\"}" );
+}
+
+MU_TEST( test_check_delete_request_parser )
+{
+    char str[]
+        = "DELETE / HTTP/1.1\r\nHost: localhost:8000\r\nUser-Agent: "
+          "curl/7.82.0\r\nAccept: */*\r\nContent-Length: 27\r\nContent-Type: "
+          "application/"
+          "x-www-form-urlencoded\r\n\r\nparam1=value1&param2=value2";
+    Request request( str );
+
+    mu_assert_string_eq( request.method.c_str(), "DELETE" );
+    mu_assert_string_eq( request.uri.c_str(), "/" );
+    mu_assert_string_eq( request.version.c_str(), "HTTP/1.1" );
+    mu_assert_string_eq( request.host.c_str(), "localhost" );
+    mu_assert_string_eq( request.port.c_str(), "8000" );
+    mu_assert_string_eq( request.user_agent.c_str(), "curl/7.82.0" );
+    mu_assert_string_eq( request.accept.c_str(), "*/*" );
+    mu_assert_string_eq( request.content_type.c_str(),
+                         "application/x-www-form-urlencoded" );
+    mu_assert_string_eq( request.content_length.c_str(), "27" );
+    mu_assert_string_eq( request.body.c_str(), "param1=value1&param2=value2" );
+}
+
+MU_TEST_SUITE( suite_name )
+{
+    MU_RUN_TEST( test_check_config_parser );
+    MU_RUN_TEST( test_check_get_request_parser );
+    MU_RUN_TEST( test_check_post_request_parser );
+    MU_RUN_TEST( test_check_delete_request_parser );
+}
 
 int main()
 {

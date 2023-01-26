@@ -1,6 +1,6 @@
 NAME = webserv
-CXX = clang++
-CXXFLAGS =  -Wall -Wextra -Werror -std=c++98 -I$(INCLUDES_PATH)
+CXX := $(shell ./scripts/set_compiler.sh)
+CXXFLAGS =  -Wall -Wextra -Werror -std=c++98 -g3 -I$(INCLUDES_PATH)
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
 
 # **************************************************************************** #
@@ -18,7 +18,6 @@ LIBS_PATH = $(PWD)/libs
 ARCHIVES_PATH = $(PWD)/archives
 
 # ****************************************************************************
-#
 
 HEADER_FILE = algorithm.hpp
 
@@ -33,7 +32,6 @@ OBJECTS = $(addprefix $(OBJECTS_PATH)/,$(subst .cpp,.o,$(SOURCE_FILES)))
 TARGET = bin/$(NAME)
 
 # **************************************************************************** #
-#
 
 ifeq (test,$(firstword $(MAKECMDGOALS)))
   # use the rest as arguments for "run"
@@ -62,12 +60,16 @@ $(OBJECTS_PATH)/%.o: $(SOURCES_PATH)/%.cpp
 
 test:
 	@mkdir -p bin
-	@$(CXX) $(CXXFLAGS) -I $(INCLUDES_PATH) $(SOURCE_FILES) tests/$(RUN_ARGS).cpp -o bin/$(RUN_ARGS)
+	@$(CXX) $(CXXFLAGS) $(SOURCE_FILES) tests/$(RUN_ARGS).cpp -o bin/$(RUN_ARGS)
 	@./bin/$(RUN_ARGS)
 
 parsers:
 	@mkdir -p bin
-	@$(CXX) $(CXXFLAGS) -I $(INCLUDES_PATH) ./sources/parsers/default/parser.cpp ./sources/parsers/default/config.cpp ./tests/$@.cpp -o bin/$@
+	@$(CXX) $(CXXFLAGS) \
+		./sources/parsers/default/parser.cpp \
+		./sources/parsers/default/config.cpp \
+		./sources/parsers/methods/request.cpp \
+		./tests/$@.cpp -o bin/$@
 	@./bin/$@
 
 clean:

@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "make parsers",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "parsers"
+      ],
+    }
+  ]
+}
