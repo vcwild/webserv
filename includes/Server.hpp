@@ -20,11 +20,14 @@ class Server {
 private:
     std::vector<Config> servers_conf;
     std::vector<int>    sockets;
+    std::map<int, std::string>	requests;
     bool                running;
 
 public:
     Server();
     Server( std::vector<Config> servers_conf );
+    Server(const Server & src);
+    //Server & operator=(const Server & src);
     ~Server();
     int  start();
     int  create_sockets();

@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/03 10:16:53 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/26 10:41:09 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/26 12:57:34 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,11 @@ static void signal_handler( int sign )
 Server::Server() : running( true )
 {
    
+}
+
+Server::Server(const Server & src)
+{
+	*this = src;
 }
 
 Server::Server( std::vector<Config> servers_conf ) : running( true )
@@ -114,19 +119,20 @@ void Server::accept_connections()
         } else {
             // iterate through the file descriptors and check the event flags
             for ( int i = 0; i < n_fds; i++ ) {
-                int sockfd = poll_fds[i].fd;
+                int server_socket = poll_fds[i].fd;
                 if ( poll_fds[i].revents & POLLIN ) {
                     struct sockaddr_in cli_addr;
                     socklen_t          clilen = sizeof(
                         cli_addr ); // store the size of the client adress
                     // accept create a new socket!
                     int connection_socket = accept(
-                        sockfd, ( struct sockaddr * ) &cli_addr, &clilen );
+                        server_socket, ( struct sockaddr * ) &cli_addr, &clilen );
                     if ( connection_socket < 0 ) {
                         // there was an error accepting the connection
                         std::cerr << "Error accepting connection" << std::endl;
                     } else {
                         this->read_request_data(connection_socket, 1024);
+                        std::cout << "Request Buff" << std::endl << this->requests[connection_socket] << std::endl;
                         // handle request!
                         // send a response based on the request!
                         this->send_basic_response( connection_socket );
@@ -156,7 +162,7 @@ int Server::read_request_data( int socket, int request_size)
     }
     if (bytes_received > 0)
     {
-        std::cout << "Request Buff" << std::endl << request_buf << std::endl;
+        this->requests[socket] = request_buf;
     }
     return ( 0 );
 }
