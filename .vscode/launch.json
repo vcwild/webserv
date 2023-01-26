@@ -5,11 +5,14 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"preLaunchTask": "make parsers",
 			"name": "(gdb) Start",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/map",
-			"args": [],
+			"program": "${workspaceFolder}/bin/parsers",
+			"args": [
+				// "config/config.conf"
+			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [],
