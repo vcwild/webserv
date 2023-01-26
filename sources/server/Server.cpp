@@ -6,28 +6,15 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/03 10:16:53 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/25 12:13:43 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/26 09:20:28 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-// O que ainda precisa ser feito?
-// Criar uma forma de sair do server.
-// Passar o valgrind.
-// Testar:
-// the client can be bounced properly if necessary
-/*If the client can be bounced properly, it means that the client can be
- * disconnected from the server in a graceful manner if necessary. This might be
- * necessary if the client is no longer responding to requests or if the client
- * is causing problems with the server. When the client is bounced properly, it
- * means that the server can disconnect the client without disrupting the
- * operation of the server or other clients that are connected to the server.*/
-// A request to your server should never hang forever
-
 Server::Server() : running( true )
 {
-    // Default constructor
+   
 }
 
 Server::Server( std::vector<Config> servers_conf ) : running( true )
@@ -38,7 +25,7 @@ Server::Server( std::vector<Config> servers_conf ) : running( true )
 
 Server::~Server()
 {
-    // Destructor
+    
 }
 
 int Server::start()
@@ -48,10 +35,60 @@ int Server::start()
     return ( 0 );
 }
 
-static void signal_handler( int sign )
+int Server::create_sockets()
 {
-    std::cout << "Signal received: " << sign << std::endl;
+    std::vector<Config>::iterator it;
+    for ( it = this->servers_conf.begin(); it != this->servers_conf.end();
+          ++it ) {
+        const Config &server_conf = *it;
+
+        // create a new socket
+        int sockfd = socket( AF_INET, SOCK_STREAM, 0 );
+        if ( sockfd < 0 ) {
+            std::cerr << "Error creating socket" << std::endl;
+            return 1;
+        }
+
+        /*A non-blocking file descriptor is a file descriptor that allows the
+        process to continue executing while waiting for an I/O operation to
+        complete. This is in contrast to a blocking file descriptor, which
+        causes the process to block (stop execution) until the I/O operation is
+        completed. Non-blocking file descriptors are useful in situations where
+        the process needs to perform multiple tasks concurrently, as they allow
+        the process to perform other tasks while waiting for an I/O operation to
+        complete. They are often used in event-driven programming and can be set
+        using the fcntl function with the O_NONBLOCK flag.*/
+
+        if ( fcntl( sockfd, F_SETFL, O_NONBLOCK ) < 0 ) {
+            // there was an error setting the flags
+            std::cerr << "Error setting flags for socket" << std::endl;
+            return 1;
+        }
+        // bind the socket to the port specified in the configuration file
+        struct sockaddr_in serv_addr;
+        serv_addr.sin_family      = AF_INET;
+        serv_addr.sin_addr.s_addr = INADDR_ANY;
+        serv_addr.sin_port        = htons( server_conf.listen_port );
+
+        if ( bind(
+                 sockfd, ( struct sockaddr * ) &serv_addr, sizeof( serv_addr ) )
+             < 0 ) {
+            std::cerr << "Error binding socket to port "
+                      << server_conf.listen_port << std::endl;
+            return 1;
+        }
+
+        if ( listen( sockfd, SOMAXCONN ) < 0 ) {
+            std::cerr << "Error setting socket to listen" << std::endl;
+            return 1;
+        }
+
+        // add the socket file descriptor to the vector
+        this->sockets.push_back( sockfd );
+    }
+    return 0;
 }
+
 
 void Server::accept_connections()
 {
@@ -128,60 +165,6 @@ int Server::send_basic_response( int socketfd )
     return ( 0 );
 }
 
-int Server::create_sockets()
-{
-    std::vector<Config>::iterator it;
-    for ( it = this->servers_conf.begin(); it != this->servers_conf.end();
-          ++it ) {
-        const Config &server_conf = *it;
-
-        // create a new socket
-        int sockfd = socket( AF_INET, SOCK_STREAM, 0 );
-        if ( sockfd < 0 ) {
-            std::cerr << "Error creating socket" << std::endl;
-            return 1;
-        }
-
-        /*A non-blocking file descriptor is a file descriptor that allows the
-        process to continue executing while waiting for an I/O operation to
-        complete. This is in contrast to a blocking file descriptor, which
-        causes the process to block (stop execution) until the I/O operation is
-        completed. Non-blocking file descriptors are useful in situations where
-        the process needs to perform multiple tasks concurrently, as they allow
-        the process to perform other tasks while waiting for an I/O operation to
-        complete. They are often used in event-driven programming and can be set
-        using the fcntl function with the O_NONBLOCK flag.*/
-
-        if ( fcntl( sockfd, F_SETFL, O_NONBLOCK ) < 0 ) {
-            // there was an error setting the flags
-            std::cerr << "Error setting flags for socket" << std::endl;
-            return 1;
-        }
-        // bind the socket to the port specified in the configuration file
-        struct sockaddr_in serv_addr;
-        serv_addr.sin_family      = AF_INET;
-        serv_addr.sin_addr.s_addr = INADDR_ANY;
-        serv_addr.sin_port        = htons( server_conf.listen_port );
-
-        if ( bind(
-                 sockfd, ( struct sockaddr * ) &serv_addr, sizeof( serv_addr ) )
-             < 0 ) {
-            std::cerr << "Error binding socket to port "
-                      << server_conf.listen_port << std::endl;
-            return 1;
-        }
-
-        if ( listen( sockfd, SOMAXCONN ) < 0 ) {
-            std::cerr << "Error setting socket to listen" << std::endl;
-            return 1;
-        }
-
-        // add the socket file descriptor to the vector
-        this->sockets.push_back( sockfd );
-    }
-    return 0;
-}
-
 void Server::close_sockets_fd()
 {
     std::vector<int>::iterator it;
@@ -191,4 +174,12 @@ void Server::close_sockets_fd()
     }
 }
 
-void Server::stop() { close_sockets_fd(); }
+void Server::stop() 
+{ 
+    close_sockets_fd(); 
+}
+
+static void signal_handler( int sign )
+{
+    std::cout << "Signal received: " << sign << std::endl;
+}
