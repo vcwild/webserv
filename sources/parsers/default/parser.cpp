@@ -3,7 +3,7 @@
 
 string handleKey( string &line ) { return line.substr( line.find( " " ) + 1 ); }
 
-static vector<string> split( string str, string delim )
+vector<string> split( string str, string delim )
 {
     vector<string> result;
     size_t         pos = 0;
@@ -58,10 +58,7 @@ static inline string &removeElements( string &s )
     return s;
 }
 
-static inline string &trim( string &s )
-{
-    return removeElements( ltrim( rtrim( s ) ) );
-}
+string &trim( string &s ) { return removeElements( ltrim( rtrim( s ) ) ); }
 
 vector<string> readLines( string &str )
 {
