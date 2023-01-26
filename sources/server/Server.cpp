@@ -6,11 +6,16 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/03 10:16:53 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/26 09:20:28 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/26 09:44:52 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+
+static void signal_handler( int sign )
+{
+    std::cout << "Signal received: " << sign << std::endl;
+}
 
 Server::Server() : running( true )
 {
@@ -125,7 +130,7 @@ void Server::accept_connections()
                         // there was an error accepting the connection
                         std::cerr << "Error accepting connection" << std::endl;
                     } else {
-                        this->read_request_data( newsockfd, 1024 );
+                        this->read_request_data(newsockfd, 1024);
                         // handle request!
                         // send a response based on the request!
                         this->send_basic_response( newsockfd );
@@ -138,17 +143,24 @@ void Server::accept_connections()
     }
 }
 
-int Server::read_request_data( int socket, int request_buf_size )
+int Server::read_request_data( int socket, int request_size)
 {
-    char request_buf[request_buf_size]; // buffer to store the request data
-    int  bytes_received = recv( socket, request_buf, request_buf_size, 0 );
+    char request_buf[request_size]; // buffer to store the request data
+    int  bytes_received = recv( socket, request_buf, request_size, 0 );
 
     // check for errors
     if ( bytes_received < 0 ) {
         std::cerr << "Error reading from connection" << std::endl;
         return 1;
     }
-    std::cout << "Request Buff" << std::endl << request_buf << std::endl;
+    if (bytes_received == 0) {
+        std::cerr << "Connection closed" << std::endl;
+        return 1;
+    }
+    if (bytes_received > 0)
+    {
+        std::cout << "Request Buff" << std::endl << request_buf << std::endl;
+    }
     return ( 0 );
 }
 
@@ -179,7 +191,3 @@ void Server::stop()
     close_sockets_fd(); 
 }
 
-static void signal_handler( int sign )
-{
-    std::cout << "Signal received: " << sign << std::endl;
-}
