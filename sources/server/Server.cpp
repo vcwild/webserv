@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/03 10:16:53 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/26 09:44:52 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/26 10:41:09 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,9 @@ int Server::start()
     return ( 0 );
 }
 
+/*
+This create sockest for it server of the conf file.
+*/
 int Server::create_sockets()
 {
     std::vector<Config>::iterator it;
@@ -49,26 +52,18 @@ int Server::create_sockets()
 
         // create a new socket
         int sockfd = socket( AF_INET, SOCK_STREAM, 0 );
-        if ( sockfd < 0 ) {
+        if ( sockfd < 0 ) 
+        {
             std::cerr << "Error creating socket" << std::endl;
             return 1;
         }
-
-        /*A non-blocking file descriptor is a file descriptor that allows the
-        process to continue executing while waiting for an I/O operation to
-        complete. This is in contrast to a blocking file descriptor, which
-        causes the process to block (stop execution) until the I/O operation is
-        completed. Non-blocking file descriptors are useful in situations where
-        the process needs to perform multiple tasks concurrently, as they allow
-        the process to perform other tasks while waiting for an I/O operation to
-        complete. They are often used in event-driven programming and can be set
-        using the fcntl function with the O_NONBLOCK flag.*/
 
         if ( fcntl( sockfd, F_SETFL, O_NONBLOCK ) < 0 ) {
             // there was an error setting the flags
             std::cerr << "Error setting flags for socket" << std::endl;
             return 1;
         }
+
         // bind the socket to the port specified in the configuration file
         struct sockaddr_in serv_addr;
         serv_addr.sin_family      = AF_INET;
@@ -97,17 +92,18 @@ int Server::create_sockets()
 
 void Server::accept_connections()
 {
-    int           nfds = this->sockets.size();
-    struct pollfd fds[nfds];
+    int           n_fds = this->sockets.size();
+    struct pollfd poll_fds[n_fds];
 
     signal( SIGINT, signal_handler );
 
-    for ( int i = 0; i < nfds; i++ ) {
-        fds[i].fd     = this->sockets[i];
-        fds[i].events = POLLIN;
-    }
+    
     while ( this->running ) {
-        int ret = poll( fds, nfds, -1 );
+        for ( int i = 0; i < n_fds; i++ ) {
+        poll_fds[i].fd     = this->sockets[i];
+        poll_fds[i].events = POLLIN;
+    }
+        int ret = poll( poll_fds, n_fds, -1 );
         if ( ret < 0 ) {
             // there was an error with the poll function
             std::cerr << "Error with poll function" << std::endl;
@@ -117,25 +113,24 @@ void Server::accept_connections()
             return;
         } else {
             // iterate through the file descriptors and check the event flags
-            for ( int i = 0; i < nfds; i++ ) {
-                int sockfd = fds[i].fd;
-                if ( fds[i].revents & POLLIN ) {
+            for ( int i = 0; i < n_fds; i++ ) {
+                int sockfd = poll_fds[i].fd;
+                if ( poll_fds[i].revents & POLLIN ) {
                     struct sockaddr_in cli_addr;
                     socklen_t          clilen = sizeof(
                         cli_addr ); // store the size of the client adress
                     // accept create a new socket!
-                    int newsockfd = accept(
+                    int connection_socket = accept(
                         sockfd, ( struct sockaddr * ) &cli_addr, &clilen );
-                    if ( newsockfd < 0 ) {
+                    if ( connection_socket < 0 ) {
                         // there was an error accepting the connection
                         std::cerr << "Error accepting connection" << std::endl;
                     } else {
-                        this->read_request_data(newsockfd, 1024);
+                        this->read_request_data(connection_socket, 1024);
                         // handle request!
                         // send a response based on the request!
-                        this->send_basic_response( newsockfd );
-                        close( newsockfd );
-                        // this->close_sockets_fd();
+                        this->send_basic_response( connection_socket );
+                        close( connection_socket );
                     }
                 }
             }
@@ -151,10 +146,12 @@ int Server::read_request_data( int socket, int request_size)
     // check for errors
     if ( bytes_received < 0 ) {
         std::cerr << "Error reading from connection" << std::endl;
+        close(socket);
         return 1;
     }
     if (bytes_received == 0) {
         std::cerr << "Connection closed" << std::endl;
+        close(socket);
         return 1;
     }
     if (bytes_received > 0)
@@ -170,9 +167,18 @@ int Server::send_basic_response( int socketfd )
 {
     const char *response = "HTTP/1.1 200 OK\nContent-Type: "
                            "text/html\nContent-Length: 11\n\nHello World";
-    if ( send( socketfd, response, strlen( response ), 0 ) == -1 ) {
-        std::cout << "send: " << strerror( errno ) << std::endl;
+    int bytes_sent = send( socketfd, response, strlen( response ), 0 );
+    if ( bytes_sent == -1 ) 
+    {
+        std::cout << "send: -1 error"<< std::endl;
+        close(socketfd);
         return ( 1 );
+    }
+    if ( bytes_sent == 0 ) 
+    {
+        std::cout << "send: 0 error"<< std::endl;
+        close(socketfd);
+        return ( 1 );  
     }
     return ( 0 );
 }
