@@ -11,6 +11,15 @@ std::string &removeSpecialCharacters( std::string       &str,
     return str;
 }
 
+std::string &findSubstring( std::string &str, const std::string &chars )
+{
+    size_t pos = str.find( chars );
+    if ( pos != std::string::npos ) {
+        str.erase( 0, pos + chars.length() );
+    }
+    return str;
+}
+
 Request::Request()
 {
     method        = "";
@@ -31,6 +40,7 @@ Request::Request( char *buf )
     std::stringstream ss( buf );
     std::string       line;
 
+    setBody( buf );
     while ( std::getline( ss, line ) ) {
         if ( ( line ).find( GET ) != std::string::npos
              || ( line ).find( POST ) != std::string::npos
@@ -101,4 +111,10 @@ void Request::setContentType( std::string &line )
     content_type = content_type_line[1];
 }
 
-void Request::setBody( std::string &line ) { body = line; }
+void Request::setBody( char *buf )
+{
+    std::string tmp( buf );
+
+    std::string substr = findSubstring( tmp, "\r\n\r\n" );
+    body               = substr;
+}

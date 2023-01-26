@@ -68,7 +68,7 @@ struct Request
     void setAccept( std::string &line );
     void setConcentLength( std::string &line );
     void setContentType( std::string &line );
-    void setBody( std::string &line );
+    void setBody( char *buf );
 };
 
 struct Response
