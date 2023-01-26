@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/03 10:16:53 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/26 16:58:29 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/26 17:20:06 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,8 +190,14 @@ void Server::close_sockets_fd()
     std::vector<int>::iterator it;
     for ( it = this->sockets.begin(); it != this->sockets.end(); ++it ) {
         int sockfd = *it;
-        close( sockfd );
+        close(sockfd);
     }
+
+    std::map<int, std::string>::iterator it2;
+    for (it2 = this->requests.begin(); it2 != this->requests.end(); it2++) {
+        close(it2->first);
+    }
+    requests.clear();
 }
 
 void Server::stop() { close_sockets_fd(); }

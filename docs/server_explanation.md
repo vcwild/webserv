@@ -38,8 +38,8 @@ Depois disso nós chamamos a função poll. Se ela retornar um valor maior que z
 Depois disso, nós usamos accept para criar uma socket para conectar com os clientes e ler as informações requisitadas. 
 
 
-
-
+Check open file descriptors:
+valgrind --track-fds=yes ./bin/webserv ./config/config.conf
 
 
 The first argument, AF_INET, specifies the address family, which is set to Internet Protocol version 4 (IPv4). The second argument, SOCK_STREAM, specifies the type of socket to be created, which is a TCP socket. The third argument, 0, is for the protocol, which is set to 0 to use the default protocol for the given socket type.
