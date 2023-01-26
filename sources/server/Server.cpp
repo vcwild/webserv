@@ -6,7 +6,7 @@
 /*   By: mvieira- <mvieira-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/03 10:16:53 by mvieira-          #+#    #+#             */
-/*   Updated: 2023/01/26 12:57:34 by mvieira-         ###   ########.fr       */
+/*   Updated: 2023/01/26 16:40:52 by mvieira-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int Server::start()
 {
     this->create_sockets();
     this->accept_connections();
+    this->close_sockets_fd();
     return ( 0 );
 }
 
@@ -108,7 +109,7 @@ void Server::accept_connections()
         poll_fds[i].fd     = this->sockets[i];
         poll_fds[i].events = POLLIN;
     }
-        int ret = poll( poll_fds, n_fds, -1 );
+        int ret = poll( poll_fds, n_fds, 5000);
         if ( ret < 0 ) {
             // there was an error with the poll function
             std::cerr << "Error with poll function" << std::endl;
