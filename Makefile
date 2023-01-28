@@ -75,5 +75,7 @@ fclean: clean
 	@$(REMOVE) $(TARGET)
 	@rm -r bin
 
+re: fclean all
+
 valgrind: all
 	@$(VALGRIND) ./$(TARGET)
