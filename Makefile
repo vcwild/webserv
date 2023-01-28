@@ -19,10 +19,6 @@ ARCHIVES_PATH = $(PWD)/archives
 
 # ****************************************************************************
 
-HEADER_FILE = algorithm.hpp
-
-HEADER = $(addprefix $(INCLUDES_PATH)/,$(HEADER_FILE))
-
 SOURCE_FILES =	$(shell find ./sources -type f \( -iname "*.cpp" ! -name "main*" \) )
 
 SOURCES = $(addprefix $(SOURCES_PATH)/,$(SOURCE_FILES))
