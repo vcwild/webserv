@@ -65,6 +65,7 @@ parsers:
 		./sources/parsers/default/parser.cpp \
 		./sources/parsers/default/config.cpp \
 		./sources/parsers/methods/request.cpp \
+		./sources/parsers/methods/response.cpp \
 		./tests/$@.cpp -o bin/$@
 	@./bin/$@
 
