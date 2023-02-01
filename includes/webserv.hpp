@@ -78,7 +78,19 @@ struct Response
     std::string status_message; // OK
     std::string content_type; // text/html
     std::string content_length; // 1234
+    std::string date; // Tue, 15 Nov 1994 08:12:31 GMT
+    std::string keep_alive; // timeout=5, max=100
+    std::string server; // Apache/2.4.1 (Unix)
+    std::string connection; // Keep-Alive
+    std::string accept_ranges; // bytes
     std::string body;
+
+    Response();
+
+    Response( char *buf );
+
+    void setFirstLine( std::string &line );
+    void setBody( char *buf );
 };
 
 std::vector<Config> parseConfig( string filename );
