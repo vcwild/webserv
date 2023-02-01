@@ -25,6 +25,19 @@
 #define AUTHORIZATION_KEY "Authorization"
 #define ACCEPT_KEY "Accept"
 
+#define STATUS_KEY "Status"
+#define ACCEPT_RANGES_KEY "Accept-Ranges"
+#define ALLOW_KEY "Allow"
+#define CONTENT_ENCODING_KEY "Content-Encoding"
+#define CONTENT_LANGUAGE_KEY "Content-Language"
+#define CONTENT_LOCATION_KEY "Content-Location"
+#define CONTENT_RANGE_KEY "Content-Range"
+#define CONTENT_TYPE_KEY "Content-Type"
+#define DATE_KEY "Date"
+#define SERVER_KEY "Server"
+#define CONNECTION_KEY "Connection"
+#define KEEP_ALIVE_KEY "Keep-Alive"
+
 /* METHODS */
 #define GET "GET"
 #define POST "POST"
@@ -32,6 +45,11 @@
 #define DELETE "DELETE"
 
 using namespace std;
+
+std::string &removeSpecialCharacters( std::string       &str,
+                                      const std::string &chars );
+
+std::string &findSubstring( std::string &str, const std::string &chars );
 
 string handleKey( string &line );
 

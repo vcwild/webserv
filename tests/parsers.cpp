@@ -141,12 +141,78 @@ MU_TEST( test_check_delete_request_parser )
     mu_assert_string_eq( request.body.c_str(), "param1=value1&param2=value2" );
 }
 
+MU_TEST( test_check_response_parser_simple )
+{
+    char str[] = "HTTP/1.1 200 OK\r\n"
+                 "Date: Mon, 31 Jan 2023 12:00:00 GMT\r\n"
+                 "Server: Apache/2.4.18 (Ubuntu)\r\n"
+                 "Content-Length: 1492\r\n"
+                 "Content-Type: text/html; charset=UTF-8\r\n"
+                 "Connection: Keep-Alive\r\n"
+                 "Keep-Alive: timeout=5, max=100\r\n"
+                 "Accept-Ranges: bytes\r\n";
+
+    Response response( str );
+
+    mu_assert_string_eq( response.version.c_str(), "HTTP/1.1" );
+    mu_assert_string_eq( response.status_code.c_str(), "200" );
+    mu_assert_string_eq( response.status_message.c_str(), "OK" );
+    mu_assert_string_eq( response.content_type.c_str(),
+                         "text/html; charset=UTF-8" );
+    mu_assert_string_eq( response.content_length.c_str(), "1492" );
+    mu_assert_string_eq( response.date.c_str(),
+                         "Mon, 31 Jan 2023 12:00:00 GMT" );
+    mu_assert_string_eq( response.keep_alive.c_str(), "timeout=5, max=100" );
+    mu_assert_string_eq( response.server.c_str(), "Apache/2.4.18 (Ubuntu)" );
+    mu_assert_string_eq( response.connection.c_str(), "Keep-Alive" );
+    mu_assert_string_eq( response.accept_ranges.c_str(), "bytes" );
+    mu_assert_string_eq( response.body.c_str(), "" );
+}
+
+MU_TEST( test_check_response_parser_with_body )
+{
+    char str[] = "HTTP/1.1 200 OK\r\n"
+                 "Date: Mon, 31 Jan 2023 12:00:00 GMT\r\n"
+                 "Server: Apache/2.4.18 (Ubuntu)\r\n"
+                 "Content-Length: 1492\r\n"
+                 "Content-Type: text/html; charset=UTF-8\r\n"
+                 "Connection: Keep-Alive\r\n"
+                 "Keep-Alive: timeout=5, max=100\r\n"
+                 "Accept-Ranges: bytes\r\n\r\n"
+                 "<html>\r\n"
+                 "<head>\r\n"
+                 "<title>Test</title>\r\n"
+                 "</head>\r\n"
+                 "<body>\r\n"
+                 "<h1>Test</h1>\r\n"
+                 "</body>\r\n"
+                 "</html>\r\n";
+
+    Response response( str );
+
+    mu_assert_string_eq( response.version.c_str(), "HTTP/1.1" );
+    mu_assert_string_eq( response.status_code.c_str(), "200" );
+    mu_assert_string_eq( response.status_message.c_str(), "OK" );
+    mu_assert_string_eq( response.content_type.c_str(),
+                         "text/html; charset=UTF-8" );
+    mu_assert_string_eq( response.content_length.c_str(), "1492" );
+    mu_assert_string_eq( response.date.c_str(),
+                         "Mon, 31 Jan 2023 12:00:00 GMT" );
+    mu_assert_string_eq( response.keep_alive.c_str(), "timeout=5, max=100" );
+    mu_assert_string_eq( response.server.c_str(), "Apache/2.4.18 (Ubuntu)" );
+    mu_assert_string_eq( response.connection.c_str(), "Keep-Alive" );
+    mu_assert_string_eq( response.accept_ranges.c_str(), "bytes" );
+    mu_assert_string_eq( response.body.c_str(), "" );
+}
+
 MU_TEST_SUITE( suite_name )
 {
     MU_RUN_TEST( test_check_config_parser );
     MU_RUN_TEST( test_check_get_request_parser );
     MU_RUN_TEST( test_check_post_request_parser );
     MU_RUN_TEST( test_check_delete_request_parser );
+    MU_RUN_TEST( test_check_response_parser_simple );
+    MU_RUN_TEST( test_check_response_parser_with_body );
 }
 
 int main()
