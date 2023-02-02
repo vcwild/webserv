@@ -14,7 +14,8 @@
 #include <unistd.h>
 
 #define REQUEST_SIZE 1024
-
+#define TRUE 1
+#define FALSE 0
 class Server {
 
 private:
