@@ -1,16 +1,24 @@
 #include "response.hpp"
 
-Response::Response() {}
+template <typename T>
+std::string NumberToString( T Number )
+{
+    std::ostringstream ss;
+    ss << Number;
+    return ss.str();
+}
 
-Response::~Response() {}
+ResponseC::ResponseC() {}
 
-int Response::getContentLength() { return body.length(); }
+ResponseC::~ResponseC() {}
 
-void Response::setStatusCode( std::string code ) { this->statusCode = code; }
+int ResponseC::getContentLength() { return body.length(); }
 
-void Response::setBody( std::string body ) { this->body = body; }
+void ResponseC::setStatusCode( std::string code ) { this->statusCode = code; }
 
-void Response::makeResponseBody( std::string body )
+void ResponseC::setBody( std::string body ) { this->body = body; }
+
+void ResponseC::makeResponseBody( std::string body )
 {
     std::string response;
 
@@ -19,7 +27,7 @@ void Response::makeResponseBody( std::string body )
     response.append( "\r\n" );
     response.append( "Content-Type: text/html\r\n" );
     response.append( "Content-Length: " );
-    response.append( std::to_string( getContentLength() ) );
+    response.append( NumberToString( getContentLength() ) );
     response.append( "\r\n\r\n" );
     response.append( body );
 }

@@ -19,12 +19,12 @@
  *
  */
 
-class Response {
+class ResponseC {
 
 private:
 public:
-    Response();
-    ~Response();
+    ResponseC();
+    ~ResponseC();
 
     std::string statusCode;
     std::string body;
