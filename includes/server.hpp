@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include <poll.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -30,14 +31,14 @@ public:
     Server( const Server &src );
     Server &operator=( const Server &src );
     ~Server();
-    int  start();
-    int  create_sockets();
-    int  read_request_data( int socket, int request_size );
-    int  send_basic_response( int socketfd );
-    int  handle_request_data();
-    void accept_connections();
-    void close_sockets_fd();
-    void stop();
+    int         start();
+    int         create_sockets();
+    int         read_request_data( int socket, int request_size );
+    int         send_basic_response( int socketfd );
+    int         handle_request_data();
+    void        accept_connections();
+    void        close_sockets_fd();
+    static void signal_handler( int signal );
 };
 
 #endif

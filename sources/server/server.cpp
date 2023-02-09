@@ -1,11 +1,13 @@
-#include "Server.hpp"
+#include "server.hpp"
 
-static void signal_handler( int sign )
+Server::Server() {}
+
+Server::~Server()
 {
-    std::cout << "Signal received: " << sign << std::endl;
+    if ( !sockets.empty() ) {
+        close_sockets_fd();
+    }
 }
-
-Server::Server() : running( true ) {}
 
 Server::Server( const Server &src ) { *this = src; }
 
@@ -15,13 +17,11 @@ Server &Server::operator=( const Server &src )
     return ( *this );
 }
 
-Server::Server( std::vector<Config> servers_conf ) : running( true )
+Server::Server( std::vector<Config> servers_conf )
 {
-    servers_conf = servers_conf;
+    this->servers_conf = servers_conf;
     start();
 }
-
-Server::~Server() {}
 
 int Server::start()
 {
@@ -74,6 +74,9 @@ int Server::create_sockets()
 
         // add the socket file descriptor to the vector
         sockets.push_back( sockfd );
+        printf( "Socket created at port %d with fd %d \n",
+                server_conf.listen_port,
+                sockfd );
     }
     return 0;
 }
@@ -84,9 +87,9 @@ void Server::accept_connections()
     struct pollfd poll_fds[n_fds];
     int           timeout;
 
-    signal( SIGINT, signal_handler );
+    printf( "Accepting connections on %d sockets \n", n_fds );
 
-    while ( running ) {
+    while ( true ) {
         for ( int i = 0; i < n_fds; i++ ) {
             poll_fds[i].fd     = sockets[i];
             poll_fds[i].events = POLLIN;
@@ -99,17 +102,20 @@ void Server::accept_connections()
         if ( ret < 0 ) {
             // there was an error with the poll function
             std::cerr << "Error with poll function" << std::endl;
+            exit( -1 );
             break;
         }
 
         if ( ret == 0 ) {
             // the poll function timed out
             std::cout << "Poll timed out" << std::endl;
+            exit( -1 );
             break;
         }
 
         // iterate through the file descriptors and check the event flags
         for ( int i = 0; i < n_fds; i++ ) {
+            printf( "Polling socket" );
             int server_socket = poll_fds[i].fd;
             if ( poll_fds[i].revents & POLLIN ) {
                 struct sockaddr_in cli_addr;
@@ -122,6 +128,7 @@ void Server::accept_connections()
                 if ( connection_socket < 0 ) {
                     // there was an error accepting the connection
                     std::cerr << "Error accepting connection" << std::endl;
+                    close( server_socket );
                 } else {
                     read_request_data( connection_socket, 1024 );
                     std::cout << "Request Buff" << std::endl
@@ -187,18 +194,19 @@ int Server::send_basic_response( int socketfd )
 
 void Server::close_sockets_fd()
 {
+    printf( "Closing sockets \n" );
+    std::map<int, std::string>::iterator it2;
+    for ( it2 = requests.begin(); it2 != requests.end(); it2++ ) {
+        printf( "Closing socket %d \n", it2->first );
+        close( it2->first );
+    }
+
     std::vector<int>::iterator it;
     for ( it = sockets.begin(); it != sockets.end(); ++it ) {
         int sockfd = *it;
+        printf( "Closing socket %d \n", sockfd );
         close( sockfd );
-    }
-
-    std::map<int, std::string>::iterator it2;
-    for ( it2 = requests.begin(); it2 != requests.end(); it2++ ) {
-        close( it2->first );
     }
 
     requests.clear();
 }
-
-void Server::stop() { close_sockets_fd(); }

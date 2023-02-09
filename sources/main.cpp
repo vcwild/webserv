@@ -1,6 +1,6 @@
 #include "Cgi_handler.hpp"
-#include "Server.hpp"
 #include "parsers.hpp"
+#include "server.hpp"
 #include "webserv.hpp"
 #include <iostream>
 
