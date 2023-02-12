@@ -9,6 +9,12 @@ int main( int argc, char **argv )
     if ( argc > 5 )
         std::cout << "Error" << std::endl;
 
+    if ( argc == 1 ) {
+        string path = argv[0];
+        if ( path == "./bin/webserv" )
+            argv[1] = ( char * ) "./config/default.conf";
+    }
+
     std::ifstream test( argv[1] );
     if ( !test ) {
         std::cout << "Error: invalid path" << std::endl;
