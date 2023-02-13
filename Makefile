@@ -69,6 +69,13 @@ parsers:
 		./tests/$@.cpp -o bin/$@
 	@./bin/$@
 
+logger:
+	@mkdir -p bin
+	@$(CXX) $(CXXFLAGS) \
+		./sources/logger/logger.cpp \
+		./tests/$@.cpp -o bin/$@
+	@./bin/$@
+
 clean:
 	rm -rf $(OBJECTS_PATH) $(NAME)
 
