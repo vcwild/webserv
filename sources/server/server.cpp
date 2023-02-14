@@ -137,7 +137,7 @@ void Server::accept_connections()
                     // send a response based on the request!
                     Request   request( requests[connection_socket].c_str() );
                     ResponseC response( request );
-                    send_basic_response( connection_socket, response );
+                    send_response( connection_socket, response );
                     close( connection_socket );
                 }
             }
@@ -173,10 +173,13 @@ int Server::read_request_data( int socket, int request_size )
 
 int Server::handle_request_data() { return ( 0 ); }
 
-int Server::send_basic_response( int socketfd, ResponseC res )
+int Server::send_response( int socketfd, ResponseC res )
 {
-    const char *response   = res.makeResponse();
-    int         bytes_sent = send( socketfd, response, strlen( response ), 0 );
+    // const char *response   = res.makeResponse();
+    std::cout << "Sending response" << res.getContentLength() << std::endl;
+    std::string response = res.makeResponse();
+
+    int bytes_sent = send( socketfd, response.c_str(), response.length(), 0 );
 
     if ( bytes_sent == -1 ) {
         std::cout << "send: -1 error" << std::endl;
