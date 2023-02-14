@@ -32,10 +32,10 @@ public:
     std::string statusCode;
     std::string body;
 
-    int   getContentLength();
-    void  setStatusCode( std::string code );
-    void  setBody( std::string body );
-    char *makeResponse();
+    int         getContentLength();
+    void        setStatusCode( std::string code );
+    void        setBody( std::string body );
+    std::string makeResponse();
 };
 
 #endif

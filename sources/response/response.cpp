@@ -24,10 +24,9 @@ void ResponseC::setStatusCode( std::string code ) { this->statusCode = code; }
 
 void ResponseC::setBody( std::string body ) { this->body = body; }
 
-char *ResponseC::makeResponse()
+std::string ResponseC::makeResponse()
 {
     std::string response;
-
     response.append( "HTTP/1.1 " );
     response.append( statusCode );
     response.append( "\r\n" );
@@ -37,5 +36,5 @@ char *ResponseC::makeResponse()
     response.append( "\r\n\r\n" );
     response.append( body );
 
-    return ( char * ) response.c_str();
+    return response;
 }
