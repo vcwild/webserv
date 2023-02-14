@@ -135,7 +135,9 @@ void Server::accept_connections()
                               << requests[connection_socket] << std::endl;
                     // handle request!
                     // send a response based on the request!
-                    send_basic_response( connection_socket );
+                    Request   request( requests[connection_socket].c_str() );
+                    ResponseC response( request );
+                    send_basic_response( connection_socket, response );
                     close( connection_socket );
                 }
             }
@@ -171,10 +173,9 @@ int Server::read_request_data( int socket, int request_size )
 
 int Server::handle_request_data() { return ( 0 ); }
 
-int Server::send_basic_response( int socketfd )
+int Server::send_basic_response( int socketfd, ResponseC res )
 {
-    const char *response   = "HTTP/1.1 200 OK\nContent-Type: "
-                             "text/html\nContent-Length: 11\n\nHello World";
+    const char *response   = res.makeResponse();
     int         bytes_sent = send( socketfd, response, strlen( response ), 0 );
 
     if ( bytes_sent == -1 ) {

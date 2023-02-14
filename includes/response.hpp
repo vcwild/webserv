@@ -22,17 +22,20 @@
 class ResponseC {
 
 private:
+    Request request;
+
 public:
     ResponseC();
+    ResponseC( Request request );
     ~ResponseC();
 
     std::string statusCode;
     std::string body;
 
-    int  getContentLength();
-    void setStatusCode( std::string code );
-    void setBody( std::string body );
-    void makeResponseBody( std::string body );
+    int   getContentLength();
+    void  setStatusCode( std::string code );
+    void  setBody( std::string body );
+    char *makeResponse();
 };
 
 #endif

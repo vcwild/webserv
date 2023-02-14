@@ -1,6 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "response.hpp"
 #include "webserv.hpp"
 #include <arpa/inet.h>
 #include <cerrno>
@@ -34,7 +35,7 @@ public:
     int  start();
     int  create_sockets();
     int  read_request_data( int socket, int request_size );
-    int  send_basic_response( int socketfd );
+    int  send_basic_response( int socketfd, ResponseC res );
     int  handle_request_data();
     void accept_connections();
     void close_sockets_fd();

@@ -5,12 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      // "preLaunchTask": "make parsers",
+      "preLaunchTask": "make",
       "name": "(gdb) Start",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/webserv",
-      "args": ["config/config.conf"],
+      "args": [
+        "config/config.conf"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
