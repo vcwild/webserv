@@ -1,12 +1,5 @@
 #include "response.hpp"
-
-template <typename T>
-std::string NumberToString( T Number )
-{
-    std::ostringstream ss;
-    ss << Number;
-    return ss.str();
-}
+#include "utils.hpp"
 
 ResponseC::ResponseC() {}
 
@@ -35,6 +28,8 @@ std::string ResponseC::makeResponse()
     response.append( NumberToString( getContentLength() ) );
     response.append( "\r\n\r\n" );
     response.append( body );
+
+    logger.info( "Response: " + response );
 
     return response;
 }

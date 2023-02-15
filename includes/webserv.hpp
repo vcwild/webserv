@@ -1,11 +1,16 @@
 #ifndef WEBSERV_H
 #define WEBSERV_H
 
+#include "logger.hpp"
 #include "parsers.hpp"
+#include "utils.hpp"
 #include <map>
 #include <sstream>
 #include <string>
 #include <vector>
+
+/* Global variables */
+static Logger logger;
 
 /* Structs */
 struct Route
