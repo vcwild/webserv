@@ -1,23 +1,26 @@
 #include "response.hpp"
 #include "utils.hpp"
 
-ResponseC::ResponseC() {}
+ft::Response::Response() {}
 
-ResponseC::ResponseC( Request request ) : request( request )
+ft::Response::Response( Request request ) : request( request )
 {
     setStatusCode( "200 OK" );
     setBody( "Hello World" );
 }
 
-ResponseC::~ResponseC() {}
+ft::Response::~Response() {}
 
-int ResponseC::getContentLength() { return body.length(); }
+int ft::Response::getContentLength() { return body.length(); }
 
-void ResponseC::setStatusCode( std::string code ) { this->statusCode = code; }
+void ft::Response::setStatusCode( std::string code )
+{
+    this->statusCode = code;
+}
 
-void ResponseC::setBody( std::string body ) { this->body = body; }
+void ft::Response::setBody( std::string body ) { this->body = body; }
 
-std::string ResponseC::makeResponse()
+std::string ft::Response::makeResponse()
 {
     std::string response;
     response.append( "HTTP/1.1 " );

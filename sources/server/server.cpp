@@ -127,8 +127,8 @@ void Server::accept_connections()
                     close( server_socket );
                 } else {
                     read_request_data( connection_socket, 1024 );
-                    Request   request( requests[connection_socket].c_str() );
-                    ResponseC response( request );
+                    Request      request( requests[connection_socket].c_str() );
+                    ft::Response response( request );
                     send_response( connection_socket, response );
                     close( connection_socket );
                 }
@@ -165,7 +165,7 @@ int Server::read_request_data( int socket, int request_size )
 
 int Server::handle_request_data() { return ( 0 ); }
 
-int Server::send_response( int socketfd, ResponseC res )
+int Server::send_response( int socketfd, ft::Response res )
 {
     std::string response = res.makeResponse();
 

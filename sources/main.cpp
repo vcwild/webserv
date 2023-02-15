@@ -7,7 +7,7 @@
 
 void sigint_handler( int sig )
 {
-    logger.info( "SIGINT received" );
+    logger.info( "SIGINT received " + NumberToString( sig ) );
     exit( -1 );
 }
 

@@ -19,15 +19,17 @@
  *
  */
 
-class ResponseC {
+namespace ft {
+
+class Response {
 
 private:
     Request request;
 
 public:
-    ResponseC();
-    ResponseC( Request request );
-    ~ResponseC();
+    Response();
+    Response( Request request );
+    ~Response();
 
     std::string statusCode;
     std::string body;
@@ -38,4 +40,5 @@ public:
     std::string makeResponse();
 };
 
+}
 #endif
