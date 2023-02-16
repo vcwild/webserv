@@ -3,10 +3,51 @@
 
 ft::Response::Response() {}
 
+std::string ft::Response::getPath( std::string uri )
+{
+    std::string path = "./www" + uri;
+    if ( path[path.length() - 1] == '/' ) {
+        path.append( "index.html" );
+    }
+    return path;
+}
+
+int ft::Response::isValidMethod( std::string method )
+{
+    if ( method == "GET" || method == "POST" || method == "DELETE" ) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+void ft::Response::handleGet( Request request )
+{
+    std::string   index_path = getPath( request.uri );
+    std::ifstream index_file( index_path.c_str() );
+    if ( index_file.is_open() ) {
+        std::string line;
+        while ( getline( index_file, line ) ) {
+            body.append( line );
+        }
+        index_file.close();
+        setStatusCode( "200 OK" );
+    } else {
+        setStatusCode( "404 Not Found" );
+        setBody( "404 Not Found" );
+    }
+}
+
 ft::Response::Response( Request request ) : request( request )
 {
-    setStatusCode( "200 OK" );
-    setBody( "Hello World" );
+    if ( !isValidMethod( request.method ) ) {
+        setStatusCode( "405 Method Not Allowed" );
+        setBody( "Method not allowed" );
+        return;
+    }
+
+    if ( request.method == "GET" ) {
+        handleGet( request );
+    }
 }
 
 ft::Response::~Response() {}

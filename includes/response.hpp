@@ -3,8 +3,9 @@
 
 #include "webserv.hpp"
 #include <cerrno>
+#include <cstdlib>
 #include <fcntl.h>
-#include <iostream>
+#include <unistd.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -38,6 +39,9 @@ public:
     void        setStatusCode( std::string code );
     void        setBody( std::string body );
     std::string makeResponse();
+    std::string getPath( std::string uri );
+    int         isValidMethod( std::string method );
+    void        handleGet( Request request );
 };
 
 }
