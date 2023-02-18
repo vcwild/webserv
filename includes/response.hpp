@@ -1,6 +1,7 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
+#include "utils.hpp"
 #include "webserv.hpp"
 #include <cerrno>
 #include <cstdlib>
@@ -29,18 +30,19 @@ private:
 
 public:
     Response();
-    Response( Request request );
+    Response( Request request, Config server_conf );
     ~Response();
 
     std::string statusCode;
     std::string body;
+    Config      server_conf;
 
     int         getContentLength();
     void        setStatusCode( std::string code );
     void        setBody( std::string body );
     std::string makeResponse();
-    std::string getPath( std::string uri );
     int         isValidMethod( std::string method );
+    std::string getPath( std::string uri );
     void        handleGet( Request request );
 };
 
