@@ -4,6 +4,7 @@
   "C_Cpp.clang_format_sortIncludes": true,
   "C_Cpp.formatting": "clangFormat",
   "files.associations": {
+    "*.conf": "javascript",
     "array": "cpp",
     "atomic": "cpp",
     "bit": "cpp",
@@ -55,6 +56,8 @@
     "streambuf": "cpp",
     "cinttypes": "cpp",
     "typeinfo": "cpp",
-    "cerrno": "cpp"
+    "cerrno": "cpp",
+    "csignal": "cpp",
+    "optional": "cpp"
   }
 }
