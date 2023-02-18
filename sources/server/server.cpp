@@ -1,6 +1,4 @@
 #include "server.hpp"
-#define SO_REUSEADDR 2
-#define SOL_SOCKET 1
 
 static void check_error( int rc, std::string msg, int listen_sd )
 {
