@@ -60,7 +60,7 @@ struct Request
 
     Request();
 
-    Request( char *buf );
+    Request( const char *buf );
 
     void setMethod( std::string &line );
     void setHost( std::string &line );
@@ -68,7 +68,7 @@ struct Request
     void setAccept( std::string &line );
     void setConcentLength( std::string &line );
     void setContentType( std::string &line );
-    void setBody( char *buf );
+    void setBody( const char *buf );
 };
 
 struct Response

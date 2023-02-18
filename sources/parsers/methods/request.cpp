@@ -34,7 +34,7 @@ Request::Request()
     cgi_path      = "";
 }
 
-Request::Request( char *buf )
+Request::Request( const char *buf )
 {
     std::stringstream ss( buf );
     std::string       line;
@@ -110,7 +110,7 @@ void Request::setContentType( std::string &line )
     content_type = content_type_line[1];
 }
 
-void Request::setBody( char *buf )
+void Request::setBody( const char *buf )
 {
     std::string tmp( buf );
 
