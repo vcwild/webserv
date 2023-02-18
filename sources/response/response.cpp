@@ -23,13 +23,11 @@ ft::Response::Response( Request request, Config server_conf ) :
     }
 
     if ( request.method == "GET" ) {
-
-        handleGet( request );
+        handleGet();
     }
 
     if ( request.method == "POST" ) {
-        setStatusCode( "200 OK" );
-        setBody( "POST" );
+        handlePost();
     }
 
     if ( request.method == "DELETE" ) {

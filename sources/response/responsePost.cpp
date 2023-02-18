@@ -30,3 +30,10 @@ an HTTP response that indicates whether the submission was successful or not,
 using an appropriate HTTP status code and optionally a response body that
 provides additional information about the outcome of the request.
 */
+
+void ft::Response::handlePost()
+{
+    // Content-type
+    setStatusCode( "200 OK" );
+    setBody( "POST" );
+}

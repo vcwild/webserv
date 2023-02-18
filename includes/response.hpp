@@ -43,7 +43,8 @@ public:
     std::string makeResponse();
     int         isValidMethod( std::string method );
     std::string getPath( std::string uri );
-    void        handleGet( Request request );
+    void        handleGet();
+    void        handlePost();
 };
 
 }

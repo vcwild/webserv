@@ -10,7 +10,7 @@ std::string ft::Response::getPath( std::string uri )
     return path;
 }
 
-void ft::Response::handleGet( Request request )
+void ft::Response::handleGet()
 {
     std::string   index_path = getPath( request.uri );
     std::ifstream index_file( index_path.c_str() );
