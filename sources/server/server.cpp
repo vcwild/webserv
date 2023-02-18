@@ -1,4 +1,15 @@
 #include "server.hpp"
+#define SO_REUSEADDR 2
+#define SOL_SOCKET 1
+
+static void check_error( int rc, std::string msg, int listen_sd )
+{
+    if ( rc < 0 ) {
+        logger.error( msg );
+        close( listen_sd );
+        exit( -1 );
+    }
+}
 
 Server::Server() {}
 
@@ -37,6 +48,7 @@ This create sockest for it server of the conf file.
 int Server::create_sockets()
 {
     std::vector<Config>::iterator it;
+
     for ( it = servers_conf.begin(); it != servers_conf.end(); ++it ) {
         const Config &server_conf = *it;
 
@@ -46,6 +58,12 @@ int Server::create_sockets()
             logger.error( "Error creating socket" );
             return FALSE;
         }
+
+        int on = 1; // used for setsockopt
+        int rc
+            = setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof( on ) );
+
+        check_error( rc, "bind() failed", sockfd );
 
         if ( fcntl( sockfd, F_SETFL, O_NONBLOCK ) < 0 ) {
             // there was an error setting the flags
@@ -58,7 +76,7 @@ int Server::create_sockets()
         serv_addr.sin_family      = AF_INET;
         serv_addr.sin_addr.s_addr = INADDR_ANY;
         serv_addr.sin_port        = htons( server_conf.listen_port );
-
+        // set socket options reuse address
         if ( bind(
                  sockfd, ( struct sockaddr * ) &serv_addr, sizeof( serv_addr ) )
              < 0 ) {
