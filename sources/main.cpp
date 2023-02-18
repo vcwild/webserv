@@ -1,4 +1,4 @@
-#include "Cgi_handler.hpp"
+#include "cgi_handler.hpp"
 #include "parsers.hpp"
 #include "server.hpp"
 #include "webserv.hpp"
