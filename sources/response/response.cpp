@@ -1,16 +1,8 @@
 #include "response.hpp"
-#include "utils.hpp"
 
 ft::Response::Response() {}
 
-std::string ft::Response::getPath( std::string uri )
-{
-    std::string path = "./www" + uri;
-    if ( path[path.length() - 1] == '/' ) {
-        path.append( "index.html" );
-    }
-    return path;
-}
+ft::Response::~Response() {}
 
 int ft::Response::isValidMethod( std::string method )
 {
@@ -20,25 +12,10 @@ int ft::Response::isValidMethod( std::string method )
     return FALSE;
 }
 
-void ft::Response::handleGet( Request request )
+ft::Response::Response( Request request, Config server_conf ) :
+    request( request ), server_conf( server_conf )
 {
-    std::string   index_path = getPath( request.uri );
-    std::ifstream index_file( index_path.c_str() );
-    if ( index_file.is_open() ) {
-        std::string line;
-        while ( getline( index_file, line ) ) {
-            body.append( line );
-        }
-        index_file.close();
-        setStatusCode( "200 OK" );
-    } else {
-        setStatusCode( "404 Not Found" );
-        setBody( "404 Not Found" );
-    }
-}
 
-ft::Response::Response( Request request ) : request( request )
-{
     if ( !isValidMethod( request.method ) ) {
         setStatusCode( "405 Method Not Allowed" );
         setBody( "Method not allowed" );
@@ -46,13 +23,22 @@ ft::Response::Response( Request request ) : request( request )
     }
 
     if ( request.method == "GET" ) {
+
         handleGet( request );
+    }
+
+    if ( request.method == "POST" ) {
+        setStatusCode( "200 OK" );
+        setBody( "POST" );
+    }
+
+    if ( request.method == "DELETE" ) {
+        setStatusCode( "200 OK" );
+        setBody( "DELETE" );
     }
 }
 
-ft::Response::~Response() {}
-
-int ft::Response::getContentLength() { return body.length(); }
+int ft::Response::getContentLength() { return this->body.length(); }
 
 void ft::Response::setStatusCode( std::string code )
 {
@@ -73,7 +59,7 @@ std::string ft::Response::makeResponse()
     response.append( "\r\n\r\n" );
     response.append( body );
 
-    logger.info( "Response: " + response );
+    logger.debug( "Response: " + response );
 
     return response;
 }
