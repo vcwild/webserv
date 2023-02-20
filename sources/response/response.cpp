@@ -17,7 +17,7 @@ ft::Response::Response( Request request, Config server_conf ) :
 {
 
     if ( !isValidMethod( request.method ) ) {
-        setStatusCode( "405 Method Not Allowed" );
+        setStatusCode( status_codes.getStatusCode( 405 ) );
         setBody( "Method not allowed" );
         return;
     }
@@ -31,7 +31,7 @@ ft::Response::Response( Request request, Config server_conf ) :
     }
 
     if ( request.method == "DELETE" ) {
-        setStatusCode( "200 OK" );
+        setStatusCode( status_codes.getStatusCode( 200 ) );
         setBody( "DELETE" );
     }
 }
@@ -43,6 +43,13 @@ void ft::Response::setStatusCode( std::string code )
     this->statusCode = code;
 }
 
+void ft::Response::setContentType( std::string type )
+{
+    this->_contentType = type;
+}
+
+std::string ft::Response::getContentType() { return this->_contentType; }
+
 void ft::Response::setBody( std::string body ) { this->body = body; }
 
 std::string ft::Response::makeResponse()
@@ -51,13 +58,15 @@ std::string ft::Response::makeResponse()
     response.append( "HTTP/1.1 " );
     response.append( statusCode );
     response.append( "\r\n" );
-    response.append( "Content-Type: text/html\r\n" );
+    response.append( "Content-Type: " );
+    response.append( getContentType() );
+    response.append( "\r\n" );
     response.append( "Content-Length: " );
     response.append( NumberToString( getContentLength() ) );
     response.append( "\r\n\r\n" );
     response.append( body );
 
-    logger.debug( "Response: " + response );
+    logger.debug( "Content Type: " + getContentType() );
 
     return response;
 }
