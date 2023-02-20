@@ -34,6 +34,7 @@ Server::Server( std::vector<Config> servers_conf )
 
 int Server::start()
 {
+    logger.info( "Webserv running 🏃" );
     create_sockets();
     accept_connections();
     close_sockets_fd();
@@ -90,7 +91,7 @@ int Server::create_sockets()
 
         // add the socket file descriptor to the vector
         sockets.push_back( sockfd );
-        logger.info( "Server started on port "
+        logger.info( "Server started on port 🚪: "
                      + NumberToString( server_conf.listen_port ) );
     }
     return 0;

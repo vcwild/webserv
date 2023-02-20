@@ -35,8 +35,14 @@ int main( int argc, char **argv )
     sigIntHandler.sa_flags = 0;
     sigaction( SIGINT, &sigIntHandler, NULL );
 
+    logger.info( "Webserv starting" );
+
     vector<Config> conf = parseConfig( argv[1] );
-    Server         server( conf );
+
+    std::string configPath = argv[1];
+    logger.info( "Config parsed from file: " + configPath );
+
+    Server server( conf );
 
     return 0;
 }
