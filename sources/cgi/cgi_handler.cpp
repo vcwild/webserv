@@ -4,7 +4,7 @@
 
 Cgi_handler::Cgi_handler() {}
 
-Cgi_handler::Cgi_handler( Request cgi_request ) : cgi_request( cgi_request )
+Cgi_handler::Cgi_handler( Request _cgi_request ) : _cgi_request( _cgi_request )
 {
     int         i;
     std::string test;
@@ -20,7 +20,24 @@ Cgi_handler::Cgi_handler( Request cgi_request ) : cgi_request( cgi_request )
     std::cout << response_body << std::endl;
 }
 
-Cgi_handler::~Cgi_handler() {}
+Cgi_handler::~Cgi_handler()
+{
+    int i = 0;
+    while ( _env_vars_array[i] ) {
+        delete[] _env_vars_array[i];
+        i++;
+    }
+    delete[] _env_vars_array;
+    std::cout << "Cgi_handler destructor called" << std::endl;
+}
+
+void Cgi_handler::run()
+{
+
+    _response_body = exec_cgi( _cgi_request.cgi_path );
+
+    std::cout << _response_body << std::endl;
+}
 
 /*The value of "SCRIPT_NAME" should be the URL path to the CGI script.
 For example, if the script is located at
@@ -31,8 +48,9 @@ located at "/var/www/html/cgi-bin/myscript.php" then the value of
 "SCRIPT_FILENAME" would be "/var/www/html/cgi-bin/myscript.php".
 */
 
-void Cgi_handler::create_env_vars()
+std::map<std::string, std::string> Cgi_handler::_create_env_vars()
 {
+    std::map< std::string, std::string> tmp_env_vars;
 
     env_vars["AUTH_TYPE"]         = cgi_request.authorization;
     env_vars["REDIRECT_STATUS"]   = "200";
@@ -54,25 +72,24 @@ void Cgi_handler::create_env_vars()
     env_vars["SERVER_SOFTWARE"]   = "Webserv/1.0";
 }
 
-char **Cgi_handler::create_env_vars_array(
-    std::map<std::string, std::string> &env_vars )
+char **Cgi_handler::_create_env_vars_array(
+    std::map<std::string, std::string> env_vars )
 {
     int    size   = env_vars.size();
     char **result = new char *[size + 1];
-    std::map<std::string, std::string>::const_iterator it;
-    int                                                i = 0;
-    for ( it = env_vars.begin(); it != env_vars.end(); it++ ) {
+    std::map<std::string, std::string>::const_iterator it = env_vars.begin();
+
+    for ( int i = 0; it != env_vars.end(); it++, i++ ) {
         std::string env_var = it->first + "=" + it->second;
         result[i]           = new char[env_var.length() + 1];
         strcpy( result[i], env_var.c_str() );
-        i++;
     }
     result[size] = 0;
+
     return result;
 }
 
-std::string Cgi_handler::exec_cgi( std::string cgi_script_path,
-                                   char      **env_vars )
+std::string Cgi_handler::exec_cgi( std::string cgi_script_path )
 {
     int         pid;
     int         pipe_stdin[2];
@@ -107,8 +124,9 @@ std::string Cgi_handler::exec_cgi( std::string cgi_script_path,
         close( pipe_stdout[1] );
 
         // Write request body to pipe for stdin
-        write(
-            pipe_stdin[1], cgi_request.body.c_str(), cgi_request.body.size() );
+        write( pipe_stdin[1],
+               _cgi_request.body.c_str(),
+               _cgi_request.body.size() );
         close( pipe_stdin[1] );
 
         // Read from pipe for stdout
@@ -124,8 +142,15 @@ std::string Cgi_handler::exec_cgi( std::string cgi_script_path,
         waitpid( -1, NULL, 0 );
     }
 
-    if ( !pid )
+    if ( !pid ) {
+        int i = 0;
+        while ( _env_vars_array[i] ) {
+            delete[] _env_vars_array[i];
+            i++;
+        }
+        delete[] _env_vars_array;
         exit( 0 );
+    }
 
     return ( new_body );
 }

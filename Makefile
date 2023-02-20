@@ -19,7 +19,7 @@ ARCHIVES_PATH = $(PWD)/archives
 
 # ****************************************************************************
 
-SOURCE_FILES =	$(shell find ./sources -type f \( -iname "*.cpp" ! -name "main*" \) )
+SOURCE_FILES =	$(shell find ./sources -type f \( -iname "*.cpp" ! -name "*main*" \) )
 
 SOURCES = $(addprefix $(SOURCES_PATH)/,$(SOURCE_FILES))
 
@@ -75,6 +75,12 @@ logger:
 	@$(CXX) $(CXXFLAGS) \
 		./sources/logger/logger.cpp \
 		./tests/$@.cpp -o bin/$@
+	@./bin/$@
+
+cgi: fclean
+	@mkdir -p bin
+	@$(CXX) $(CXXFLAGS) \
+		$(SOURCE_FILES) ./sources/cgi_main.cpp -o bin/$@
 	@./bin/$@
 
 clean:
