@@ -70,7 +70,7 @@ parsers:
 		./tests/$@.cpp -o bin/$@
 	@./bin/$@
 
-logger:
+logger: fclean
 	@mkdir -p bin
 	@$(CXX) $(CXXFLAGS) \
 		./sources/logger/logger.cpp \
@@ -80,7 +80,8 @@ logger:
 cgi: fclean
 	@mkdir -p bin
 	@$(CXX) $(CXXFLAGS) \
-		$(SOURCE_FILES) ./sources/cgi_main.cpp -o bin/$@
+		$(SOURCE_FILES) \
+		./tests/cgi.cpp -o bin/$@
 	@./bin/$@
 
 clean:
