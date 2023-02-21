@@ -1,6 +1,8 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
+#include "mimetypes.hpp"
+#include "statusCodes.hpp"
 #include "utils.hpp"
 #include "webserv.hpp"
 #include <cerrno>
@@ -11,22 +13,16 @@
 #define TRUE 1
 #define FALSE 0
 
-/**
- * @brief Response example
- * HTTP/1.1 202 Accepted
- * Content-Type: text/plain
- * Content-Length: 11
-
- * Maybe I'll
- *
- */
+static MimeType   mime_types;
+static StatusCode status_codes;
 
 namespace ft {
 
 class Response {
 
 private:
-    Request request;
+    Request     request;
+    std::string _contentType;
 
 public:
     Response();
@@ -40,6 +36,8 @@ public:
     int         getContentLength();
     void        setStatusCode( std::string code );
     void        setBody( std::string body );
+    void        setContentType( std::string type );
+    std::string getContentType();
     std::string makeResponse();
     int         isValidMethod( std::string method );
     std::string getPath( std::string uri );
