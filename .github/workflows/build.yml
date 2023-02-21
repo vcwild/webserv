@@ -21,3 +21,4 @@ jobs:
       - name: Run the tests
         run: |
           make test parsers
+          make test cgi

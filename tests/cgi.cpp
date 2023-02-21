@@ -19,7 +19,7 @@ Request createSampleRequest()
     req.user_agent    = "Mozilla/5.0 (X11; Linux x86_64; rv:78.0)";
     req.authorization = "";
     req.query         = "name=value";
-    req.cgi_path      = "./cgi-bin/basic.py";
+    req.cgi_path      = "./cgi-bin/python-cgi";
     return req;
 }
 
@@ -27,6 +27,15 @@ MU_TEST( test_run_mock_cgi )
 {
     Cgi_handler cgi( createSampleRequest() );
     cgi.run();
+    std::string response = cgi.get_response_body();
+
+    std::string expected = "Content-type: text/html\n";
+
+    std::size_t size = expected.size();
+
+    std::string response_slice = response.substr( 0, size );
+
+    mu_assert_string_eq( expected.c_str(), response_slice.c_str() );
 }
 
 MU_TEST_SUITE( suite_cgi ) { MU_RUN_TEST( test_run_mock_cgi ); }
