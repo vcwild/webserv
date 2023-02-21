@@ -2,16 +2,26 @@
 
 import os
 
-print("Content-type: text/html")
-print()
+def set_params(script_name: str, path_info: str):
+    print(f"""\
+Content-type: text/html
 
-print("<html>")
-print("<head>")
-print("<title>CGI Script</title>")
-print("</head>")
-print("<body>")
-print("<h1>CGI Script</h1>")
-print("<p>SCRIPT_NAME: " + os.environ["SCRIPT_NAME"] + "</p>")
-print("<p>PATH_INFO: " + os.environ["PATH_INFO"] + "</p>")
-print("</body>")
-print("</html>")
+<html>
+<head>
+<title>CGI Script</title>
+</head>
+<body>
+<h1>CGI Script</h1>
+<p>SCRIPT_NAME: " + {script_name} + "</p>
+<p>PATH_INFO: " + {path_info} + "</p>
+</body>
+</html>""")
+
+def exec():
+    try:
+        set_params(os.environ["SCRIPT_NAME"], os.environ["PATH_INFO"])
+    except KeyError:
+        set_params("basic.py", "no path info")
+
+if __name__ == "__main__":
+    exec()

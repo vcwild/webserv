@@ -4,23 +4,31 @@
 
 Cgi_handler::Cgi_handler() {}
 
-Cgi_handler::Cgi_handler( Request cgi_request ) : cgi_request( cgi_request )
+Cgi_handler::Cgi_handler( Request _cgi_request ) : _cgi_request( _cgi_request )
 {
-    int         i;
-    std::string test;
-    create_env_vars();
-    char **env_vars = create_env_vars_array( this->env_vars );
-    response_body   = exec_cgi( cgi_request.cgi_path, env_vars );
-    i               = 0;
-    while ( env_vars[i] ) {
-        delete[] env_vars[i];
-        i++;
-    }
-    delete[] env_vars;
-    std::cout << response_body << std::endl;
+    std::map<std::string, std::string> tmp_env_vars = _create_env_vars();
+
+    _env_vars_array = _create_env_vars_array( tmp_env_vars );
+    _response_body  = "";
 }
 
-Cgi_handler::~Cgi_handler() {}
+Cgi_handler::~Cgi_handler()
+{
+    int i = 0;
+    while ( _env_vars_array[i] ) {
+        delete[] _env_vars_array[i];
+        i++;
+    }
+    delete[] _env_vars_array;
+}
+
+void Cgi_handler::run()
+{
+
+    _response_body = exec_cgi( _cgi_request.cgi_path );
+
+    std::cout << _response_body << std::endl;
+}
 
 /*The value of "SCRIPT_NAME" should be the URL path to the CGI script.
 For example, if the script is located at
@@ -31,48 +39,50 @@ located at "/var/www/html/cgi-bin/myscript.php" then the value of
 "SCRIPT_FILENAME" would be "/var/www/html/cgi-bin/myscript.php".
 */
 
-void Cgi_handler::create_env_vars()
+std::map<std::string, std::string> Cgi_handler::_create_env_vars()
 {
+    std::map< std::string, std::string> tmp_env_vars;
 
-    env_vars["AUTH_TYPE"]         = cgi_request.authorization;
-    env_vars["REDIRECT_STATUS"]   = "200";
-    env_vars["GATEWAY_INTERFACE"] = "CGI/1.1";
-    env_vars["SCRIPT_NAME"]       = cgi_request.cgi_path;
-    env_vars["SCRIPT_FILENAME"]   = cgi_request.cgi_path;
-    env_vars["REQUEST_METHOD"]    = cgi_request.method;
-    env_vars["CONTENT_LENGTH"]    = cgi_request.body; // Converter para char*
-    env_vars["CONTENT_TYPE"]      = cgi_request.content_type;
-    env_vars["PATH_INFO"]         = cgi_request.cgi_path;
-    env_vars["PATH_TRANSLATED"]   = cgi_request.cgi_path;
-    env_vars["QUERY_STRING"]      = cgi_request.query;
-    env_vars["REMOTEaddr"]        = cgi_request.port;
-    env_vars["REMOTE_IDENT"]      = cgi_request.authorization;
-    env_vars["REMOTE_USER"]       = cgi_request.authorization;
-    env_vars["REQUEST_URI"]       = cgi_request.cgi_path + cgi_request.query;
-    env_vars["SERVER_NAME"]       = cgi_request.host;
-    env_vars["SERVER_PROTOCOL"]   = "HTTP/1.1";
-    env_vars["SERVER_SOFTWARE"]   = "Webserv/1.0";
+    tmp_env_vars["AUTH_TYPE"]         = _cgi_request.authorization;
+    tmp_env_vars["REDIRECT_STATUS"]   = "200";
+    tmp_env_vars["GATEWAY_INTERFACE"] = "CGI/1.1";
+    tmp_env_vars["SCRIPT_NAME"]       = _cgi_request.cgi_path;
+    tmp_env_vars["SCRIPT_FILENAME"]   = _cgi_request.cgi_path;
+    tmp_env_vars["REQUEST_METHOD"]    = _cgi_request.method;
+    tmp_env_vars["CONTENT_LENGTH"]  = _cgi_request.body; // Converter para char*
+    tmp_env_vars["CONTENT_TYPE"]    = _cgi_request.content_type;
+    tmp_env_vars["PATH_INFO"]       = _cgi_request.cgi_path;
+    tmp_env_vars["PATH_TRANSLATED"] = _cgi_request.cgi_path;
+    tmp_env_vars["QUERY_STRING"]    = _cgi_request.query;
+    tmp_env_vars["REMOTEaddr"]      = _cgi_request.port;
+    tmp_env_vars["REMOTE_IDENT"]    = _cgi_request.authorization;
+    tmp_env_vars["REMOTE_USER"]     = _cgi_request.authorization;
+    tmp_env_vars["REQUEST_URI"] = _cgi_request.cgi_path + _cgi_request.query;
+    tmp_env_vars["SERVER_NAME"] = _cgi_request.host;
+    tmp_env_vars["SERVER_PROTOCOL"] = "HTTP/1.1";
+    tmp_env_vars["SERVER_SOFTWARE"] = "Webserv/1.0";
+
+    return tmp_env_vars;
 }
 
-char **Cgi_handler::create_env_vars_array(
-    std::map<std::string, std::string> &env_vars )
+char **Cgi_handler::_create_env_vars_array(
+    std::map<std::string, std::string> env_vars )
 {
     int    size   = env_vars.size();
     char **result = new char *[size + 1];
-    std::map<std::string, std::string>::const_iterator it;
-    int                                                i = 0;
-    for ( it = env_vars.begin(); it != env_vars.end(); it++ ) {
+    std::map<std::string, std::string>::const_iterator it = env_vars.begin();
+
+    for ( int i = 0; it != env_vars.end(); it++, i++ ) {
         std::string env_var = it->first + "=" + it->second;
         result[i]           = new char[env_var.length() + 1];
         strcpy( result[i], env_var.c_str() );
-        i++;
     }
     result[size] = 0;
+
     return result;
 }
 
-std::string Cgi_handler::exec_cgi( std::string cgi_script_path,
-                                   char      **env_vars )
+std::string Cgi_handler::exec_cgi( std::string cgi_script_path )
 {
     int         pid;
     int         pipe_stdin[2];
@@ -80,13 +90,13 @@ std::string Cgi_handler::exec_cgi( std::string cgi_script_path,
     std::string new_body;
 
     if ( pipe( pipe_stdin ) == -1 || pipe( pipe_stdout ) == -1 ) {
-        logger.error( "Pipe failed." );
+        perror( "pipe" );
     }
 
     pid = fork();
 
     if ( pid == -1 ) {
-        logger.error( "Fork failed." );
+        std::cerr << "Fork failed." << std::endl;
         return ( "Status: 500\r\n\r\n" );
     } else if ( !pid ) {
         // Child process
@@ -97,9 +107,9 @@ std::string Cgi_handler::exec_cgi( std::string cgi_script_path,
         dup2( pipe_stdout[1], STDOUT_FILENO );
 
         char *argv[] = { NULL };
-        execve( cgi_script_path.c_str(), argv, env_vars );
-        logger.error( "Error: execve failed with error code: "
-                      + std::string( strerror( errno ) ) );
+        execve( cgi_script_path.c_str(), argv, _env_vars_array );
+        std::cerr << "Error: execve failed with error code: "
+                  << strerror( errno ) << std::endl;
         write( STDOUT_FILENO, "Status: 500\r\n\r\n", 15 );
     } else {
         // Parent process
@@ -107,8 +117,9 @@ std::string Cgi_handler::exec_cgi( std::string cgi_script_path,
         close( pipe_stdout[1] );
 
         // Write request body to pipe for stdin
-        write(
-            pipe_stdin[1], cgi_request.body.c_str(), cgi_request.body.size() );
+        write( pipe_stdin[1],
+               _cgi_request.body.c_str(),
+               _cgi_request.body.size() );
         close( pipe_stdin[1] );
 
         // Read from pipe for stdout
@@ -124,10 +135,17 @@ std::string Cgi_handler::exec_cgi( std::string cgi_script_path,
         waitpid( -1, NULL, 0 );
     }
 
-    if ( !pid )
+    if ( !pid ) {
+        int i = 0;
+        while ( _env_vars_array[i] ) {
+            delete[] _env_vars_array[i];
+            i++;
+        }
+        delete[] _env_vars_array;
         exit( 0 );
+    }
 
     return ( new_body );
 }
 
-std::string Cgi_handler::get_response_body() { return ( response_body ); }
+std::string Cgi_handler::get_response_body() { return ( _response_body ); }

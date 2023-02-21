@@ -1,5 +1,10 @@
 #include "cgi_handler.hpp"
+#include "minunit.h"
 #include "webserv.hpp"
+
+void test_setup() {}
+
+void test_teardown() {}
 
 Request createSampleRequest()
 {
@@ -18,10 +23,18 @@ Request createSampleRequest()
     return req;
 }
 
+MU_TEST( test_run_mock_cgi )
+{
+    Cgi_handler cgi( createSampleRequest() );
+    cgi.run();
+}
+
+MU_TEST_SUITE( suite_cgi ) { MU_RUN_TEST( test_run_mock_cgi ); }
+
 int main()
 {
-    Request req;
-    req = createSampleRequest();
-    Cgi_handler cgi( req );
-    return 0;
+    MU_SUITE_CONFIGURE( &test_setup, &test_teardown );
+    MU_RUN_SUITE( suite_cgi );
+    MU_REPORT();
+    return MU_EXIT_CODE;
 }

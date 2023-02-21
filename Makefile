@@ -19,7 +19,7 @@ ARCHIVES_PATH = $(PWD)/archives
 
 # ****************************************************************************
 
-SOURCE_FILES =	$(shell find ./sources -type f \( -iname "*.cpp" ! -name "main*" \) )
+SOURCE_FILES =	$(shell find ./sources -type f \( -iname "*.cpp" ! -name "*main*" \) )
 
 SOURCES = $(addprefix $(SOURCES_PATH)/,$(SOURCE_FILES))
 
@@ -54,35 +54,18 @@ $(OBJECTS_PATH)/%.o: $(SOURCES_PATH)/%.cpp
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-test:
+test: fclean
 	@mkdir -p bin
-	@$(CXX) $(CXXFLAGS) $(SOURCE_FILES) tests/$(RUN_ARGS).cpp -o bin/$(RUN_ARGS)
+	@$(CXX) $(CXXFLAGS) $(SOURCE_FILES) \
+	tests/$(RUN_ARGS).cpp -o bin/$(RUN_ARGS)
 	@./bin/$(RUN_ARGS)
-
-parsers:
-	@mkdir -p bin
-	@$(CXX) $(CXXFLAGS) \
-		./sources/parsers/default/parser.cpp \
-		./sources/parsers/default/config.cpp \
-		./sources/parsers/methods/request.cpp \
-		./sources/parsers/methods/response.cpp \
-		./sources/logger/logger.cpp \
-		./tests/$@.cpp -o bin/$@
-	@./bin/$@
-
-logger:
-	@mkdir -p bin
-	@$(CXX) $(CXXFLAGS) \
-		./sources/logger/logger.cpp \
-		./tests/$@.cpp -o bin/$@
-	@./bin/$@
 
 clean:
 	rm -rf $(OBJECTS_PATH) $(NAME)
 
 fclean: clean
 	@$(REMOVE) $(TARGET)
-	@rm -r bin
+	@rm -rf bin
 
 re: fclean all
 

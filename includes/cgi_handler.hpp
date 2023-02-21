@@ -13,20 +13,26 @@
 class Cgi_handler {
 
 private:
-    Request cgi_request;
-    std::map<std::string, std::string>
-                env_vars; // environment variables for the CGI process
-    std::string response_body; // new body to be sent to the client
+    // Attributes
+    Request     _cgi_request;
+    std::string _response_body; // new body to be sent to the client
+    char      **_env_vars_array;
+
+    // Methods
+    char **
+    _create_env_vars_array( std::map<std::string, std::string> env_vars );
+    std::map<std::string, std::string> _create_env_vars();
 
 public:
+    // Constructors and destructors
     Cgi_handler();
-    Cgi_handler( Request cgi_request );
-    void        create_env_vars();
-    std::string get_response_body();
+    Cgi_handler( Request _cgi_request );
     ~Cgi_handler();
-    char **
-    create_env_vars_array( std::map<std::string, std::string> &env_vars );
-    std::string exec_cgi( std::string cgi_script_path, char **env_vars_array );
+
+    // Methods
+    std::string get_response_body();
+    void        run();
+    std::string exec_cgi( std::string cgi_script_path );
 };
 
 #endif
