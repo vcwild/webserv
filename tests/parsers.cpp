@@ -31,9 +31,9 @@ MU_TEST( test_check_config_parser )
             mu_assert_string_eq( route.allow_methods[0].c_str(), "POST" );
             mu_assert_string_eq( route.allow_methods[1].c_str(), "GET" );
             mu_assert_string_eq( route.autoindex.c_str(), "off" );
-            mu_assert_string_eq( route.cgi[0].c_str(), ".php" );
+            mu_assert_string_eq( route.cgi[0].c_str(), ".py" );
             mu_assert_string_eq( route.cgi[1].c_str(),
-                                 "./www/cgi-bin/php-cgi" );
+                                 "./www/cgi-bin/python-cgi" );
         }
         {
             Route route = config.routes[1];
@@ -66,9 +66,9 @@ MU_TEST( test_check_config_parser )
             mu_assert_string_eq( route.allow_methods[0].c_str(), "POST" );
             mu_assert_string_eq( route.allow_methods[1].c_str(), "GET" );
             mu_assert_string_eq( route.autoindex.c_str(), "off" );
-            mu_assert_string_eq( route.cgi[0].c_str(), ".php" );
+            mu_assert_string_eq( route.cgi[0].c_str(), ".py" );
             mu_assert_string_eq( route.cgi[1].c_str(),
-                                 "./www/cgi-bin/php-cgi" );
+                                 "./www/cgi-bin/python-cgi" );
         }
         {
             Route route = config.routes[1];
