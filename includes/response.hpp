@@ -23,6 +23,7 @@ class Response {
 private:
     Request     request;
     std::string _contentType;
+    void        callErrorPage( std::string &body, std::string error_page );
 
 public:
     Response();

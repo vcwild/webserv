@@ -10,7 +10,7 @@ std::string ft::Response::getPath( std::string uri )
     return path;
 }
 
-static void readFromAFile( std::string path, std::string &body )
+static int readFromAFile( std::string path, std::string &body )
 {
     std::ifstream file( path.c_str() );
     if ( file.is_open() ) {
@@ -19,25 +19,42 @@ static void readFromAFile( std::string path, std::string &body )
             body.append( line );
         }
         file.close();
+        return TRUE;
+    }
+    return FALSE;
+}
+
+void ft::Response::callErrorPage( std::string &body, std::string error_page )
+{
+    std::string   parsedErrorPage = error_page.erase( 0, 1 );
+    std::string   errorPath       = getPath( parsedErrorPage );
+    std::ifstream errorFile( errorPath.c_str() );
+
+    if ( errorFile.is_open() ) {
+        readFromAFile( errorPath, body );
+        setContentType( mime_types.getMimeType( ".html" ) );
+        setStatusCode( status_codes.getStatusCode( 404 ) );
+    } else {
+        std::string errorPath = getPath( "/404.html" );
+        setContentType( mime_types.getMimeType( ".html" ) );
+        readFromAFile( errorPath, body );
+        setStatusCode( status_codes.getStatusCode( 404 ) );
     }
 }
 
 void ft::Response::handleGet()
 {
-    std::string   index_path = getPath( request.uri );
-    std::ifstream index_file( index_path.c_str() );
+    std::string   indexPath = getPath( request.uri );
+    std::ifstream indexFile( indexPath.c_str() );
+    std::string   extension
+        = indexPath.substr( indexPath.find_last_of( "." ) + 1 );
 
-    std::string extension
-        = index_path.substr( index_path.find_last_of( "." ) + 1 );
     setContentType( mime_types.getMimeType( "." + extension ) );
 
-    if ( index_file.is_open() ) {
-        readFromAFile( index_path, body );
+    if ( indexFile.is_open() ) {
+        readFromAFile( indexPath, body );
         setStatusCode( status_codes.getStatusCode( 200 ) );
     } else {
-        // Load default 404 page 404.html
-        std::string error_path = getPath( "/404.html" );
-        readFromAFile( error_path, body );
-        setStatusCode( status_codes.getStatusCode( 404 ) );
+        callErrorPage( body, server_conf.error_page[1] );
     }
 }
