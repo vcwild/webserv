@@ -58,7 +58,32 @@ static inline string &removeElements( string &s )
     return s;
 }
 
-string &trim( string &s ) { return removeElements( ltrim( rtrim( s ) ) ); }
+static inline string &innerTrim( string &input )
+{
+    string output;
+
+    bool prev_was_space = false;
+    for ( long unsigned int i = 0; i < input.size(); i++ ) {
+        if ( input[i] == ' ' ) {
+            if ( !prev_was_space && i > 0 && i < input.size() - 1 ) {
+                output += ' ';
+                prev_was_space = true;
+            }
+        } else {
+            output += input[i];
+            prev_was_space = false;
+        }
+    }
+
+    input = output;
+
+    return input;
+}
+
+string &trim( string &s )
+{
+    return removeElements( ltrim( rtrim( innerTrim( s ) ) ) );
+}
 
 vector<string> readLines( string &str )
 {

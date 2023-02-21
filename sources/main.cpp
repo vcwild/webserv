@@ -1,8 +1,15 @@
-#include "Cgi_handler.hpp"
+#include "cgi_handler.hpp"
 #include "parsers.hpp"
 #include "server.hpp"
 #include "webserv.hpp"
+#include <csignal>
 #include <iostream>
+
+void sigint_handler( int sig )
+{
+    logger.info( "SIGINT received " + NumberToString( sig ) );
+    exit( -1 );
+}
 
 int main( int argc, char **argv )
 {
@@ -17,11 +24,25 @@ int main( int argc, char **argv )
 
     std::ifstream test( argv[1] );
     if ( !test ) {
-        std::cout << "Error: invalid path" << std::endl;
+        logger.error( "Error: invalid path" );
         return 1;
     }
 
+    struct sigaction sigIntHandler;
+
+    sigIntHandler.sa_handler = sigint_handler;
+    sigemptyset( &sigIntHandler.sa_mask );
+    sigIntHandler.sa_flags = 0;
+    sigaction( SIGINT, &sigIntHandler, NULL );
+
+    logger.info( "Webserv starting" );
+
     vector<Config> conf = parseConfig( argv[1] );
-    Server         server( conf );
+
+    std::string configPath = argv[1];
+    logger.info( "Config parsed from file: " + configPath );
+
+    Server server( conf );
+
     return 0;
 }

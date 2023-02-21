@@ -1,40 +1,72 @@
 #include "response.hpp"
 
-template <typename T>
-std::string NumberToString( T Number )
+ft::Response::Response() {}
+
+ft::Response::~Response() {}
+
+int ft::Response::isValidMethod( std::string method )
 {
-    std::ostringstream ss;
-    ss << Number;
-    return ss.str();
+    if ( method == "GET" || method == "POST" || method == "DELETE" ) {
+        return TRUE;
+    }
+    return FALSE;
 }
 
-ResponseC::ResponseC() {}
-
-ResponseC::ResponseC( Request request ) : request( request )
+ft::Response::Response( Request request, Config server_conf ) :
+    request( request ), server_conf( server_conf )
 {
-    setStatusCode( "200 OK" );
-    setBody( "Hello World" );
+
+    if ( !isValidMethod( request.method ) ) {
+        setStatusCode( status_codes.getStatusCode( 405 ) );
+        setBody( "Method not allowed" );
+        return;
+    }
+
+    if ( request.method == "GET" ) {
+        handleGet();
+    }
+
+    if ( request.method == "POST" ) {
+        handlePost();
+    }
+
+    if ( request.method == "DELETE" ) {
+        setStatusCode( status_codes.getStatusCode( 200 ) );
+        setBody( "DELETE" );
+    }
 }
 
-ResponseC::~ResponseC() {}
+int ft::Response::getContentLength() { return this->body.length(); }
 
-int ResponseC::getContentLength() { return body.length(); }
+void ft::Response::setStatusCode( std::string code )
+{
+    this->statusCode = code;
+}
 
-void ResponseC::setStatusCode( std::string code ) { this->statusCode = code; }
+void ft::Response::setContentType( std::string type )
+{
+    this->_contentType = type;
+}
 
-void ResponseC::setBody( std::string body ) { this->body = body; }
+std::string ft::Response::getContentType() { return this->_contentType; }
 
-std::string ResponseC::makeResponse()
+void ft::Response::setBody( std::string body ) { this->body = body; }
+
+std::string ft::Response::makeResponse()
 {
     std::string response;
     response.append( "HTTP/1.1 " );
     response.append( statusCode );
     response.append( "\r\n" );
-    response.append( "Content-Type: text/html\r\n" );
+    response.append( "Content-Type: " );
+    response.append( getContentType() );
+    response.append( "\r\n" );
     response.append( "Content-Length: " );
     response.append( NumberToString( getContentLength() ) );
     response.append( "\r\n\r\n" );
     response.append( body );
+
+    logger.debug( "Content Type: " + getContentType() );
 
     return response;
 }
