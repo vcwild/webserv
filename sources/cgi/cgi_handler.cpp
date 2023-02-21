@@ -6,18 +6,10 @@ Cgi_handler::Cgi_handler() {}
 
 Cgi_handler::Cgi_handler( Request _cgi_request ) : _cgi_request( _cgi_request )
 {
-    int         i;
-    std::string test;
-    create_env_vars();
-    char **env_vars = create_env_vars_array( this->env_vars );
-    response_body   = exec_cgi( cgi_request.cgi_path, env_vars );
-    i               = 0;
-    while ( env_vars[i] ) {
-        delete[] env_vars[i];
-        i++;
-    }
-    delete[] env_vars;
-    std::cout << response_body << std::endl;
+    std::map<std::string, std::string> tmp_env_vars = _create_env_vars();
+
+    _env_vars_array = _create_env_vars_array( tmp_env_vars );
+    _response_body  = "";
 }
 
 Cgi_handler::~Cgi_handler()
@@ -28,7 +20,6 @@ Cgi_handler::~Cgi_handler()
         i++;
     }
     delete[] _env_vars_array;
-    std::cout << "Cgi_handler destructor called" << std::endl;
 }
 
 void Cgi_handler::run()
@@ -52,24 +43,26 @@ std::map<std::string, std::string> Cgi_handler::_create_env_vars()
 {
     std::map< std::string, std::string> tmp_env_vars;
 
-    env_vars["AUTH_TYPE"]         = cgi_request.authorization;
-    env_vars["REDIRECT_STATUS"]   = "200";
-    env_vars["GATEWAY_INTERFACE"] = "CGI/1.1";
-    env_vars["SCRIPT_NAME"]       = cgi_request.cgi_path;
-    env_vars["SCRIPT_FILENAME"]   = cgi_request.cgi_path;
-    env_vars["REQUEST_METHOD"]    = cgi_request.method;
-    env_vars["CONTENT_LENGTH"]    = cgi_request.body; // Converter para char*
-    env_vars["CONTENT_TYPE"]      = cgi_request.content_type;
-    env_vars["PATH_INFO"]         = cgi_request.cgi_path;
-    env_vars["PATH_TRANSLATED"]   = cgi_request.cgi_path;
-    env_vars["QUERY_STRING"]      = cgi_request.query;
-    env_vars["REMOTEaddr"]        = cgi_request.port;
-    env_vars["REMOTE_IDENT"]      = cgi_request.authorization;
-    env_vars["REMOTE_USER"]       = cgi_request.authorization;
-    env_vars["REQUEST_URI"]       = cgi_request.cgi_path + cgi_request.query;
-    env_vars["SERVER_NAME"]       = cgi_request.host;
-    env_vars["SERVER_PROTOCOL"]   = "HTTP/1.1";
-    env_vars["SERVER_SOFTWARE"]   = "Webserv/1.0";
+    tmp_env_vars["AUTH_TYPE"]         = _cgi_request.authorization;
+    tmp_env_vars["REDIRECT_STATUS"]   = "200";
+    tmp_env_vars["GATEWAY_INTERFACE"] = "CGI/1.1";
+    tmp_env_vars["SCRIPT_NAME"]       = _cgi_request.cgi_path;
+    tmp_env_vars["SCRIPT_FILENAME"]   = _cgi_request.cgi_path;
+    tmp_env_vars["REQUEST_METHOD"]    = _cgi_request.method;
+    tmp_env_vars["CONTENT_LENGTH"]  = _cgi_request.body; // Converter para char*
+    tmp_env_vars["CONTENT_TYPE"]    = _cgi_request.content_type;
+    tmp_env_vars["PATH_INFO"]       = _cgi_request.cgi_path;
+    tmp_env_vars["PATH_TRANSLATED"] = _cgi_request.cgi_path;
+    tmp_env_vars["QUERY_STRING"]    = _cgi_request.query;
+    tmp_env_vars["REMOTEaddr"]      = _cgi_request.port;
+    tmp_env_vars["REMOTE_IDENT"]    = _cgi_request.authorization;
+    tmp_env_vars["REMOTE_USER"]     = _cgi_request.authorization;
+    tmp_env_vars["REQUEST_URI"] = _cgi_request.cgi_path + _cgi_request.query;
+    tmp_env_vars["SERVER_NAME"] = _cgi_request.host;
+    tmp_env_vars["SERVER_PROTOCOL"] = "HTTP/1.1";
+    tmp_env_vars["SERVER_SOFTWARE"] = "Webserv/1.0";
+
+    return tmp_env_vars;
 }
 
 char **Cgi_handler::_create_env_vars_array(
@@ -97,13 +90,13 @@ std::string Cgi_handler::exec_cgi( std::string cgi_script_path )
     std::string new_body;
 
     if ( pipe( pipe_stdin ) == -1 || pipe( pipe_stdout ) == -1 ) {
-        logger.error( "Pipe failed." );
+        perror( "pipe" );
     }
 
     pid = fork();
 
     if ( pid == -1 ) {
-        logger.error( "Fork failed." );
+        std::cerr << "Fork failed." << std::endl;
         return ( "Status: 500\r\n\r\n" );
     } else if ( !pid ) {
         // Child process
@@ -114,9 +107,9 @@ std::string Cgi_handler::exec_cgi( std::string cgi_script_path )
         dup2( pipe_stdout[1], STDOUT_FILENO );
 
         char *argv[] = { NULL };
-        execve( cgi_script_path.c_str(), argv, env_vars );
-        logger.error( "Error: execve failed with error code: "
-                      + std::string( strerror( errno ) ) );
+        execve( cgi_script_path.c_str(), argv, _env_vars_array );
+        std::cerr << "Error: execve failed with error code: "
+                  << strerror( errno ) << std::endl;
         write( STDOUT_FILENO, "Status: 500\r\n\r\n", 15 );
     } else {
         // Parent process
@@ -155,4 +148,4 @@ std::string Cgi_handler::exec_cgi( std::string cgi_script_path )
     return ( new_body );
 }
 
-std::string Cgi_handler::get_response_body() { return ( response_body ); }
+std::string Cgi_handler::get_response_body() { return ( _response_body ); }
