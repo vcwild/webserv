@@ -1,4 +1,5 @@
 #include "response.hpp"
+#include <algorithm>
 
 ft::Response::Response() {}
 
@@ -6,7 +7,11 @@ ft::Response::~Response() {}
 
 int ft::Response::isValidMethod( std::string method )
 {
-    if ( method == "GET" || method == "POST" || method == "DELETE" ) {
+    if ( ( method == "GET" || method == "POST" || method == "DELETE" )
+         && std::find( server_conf.allowed_method.begin(),
+                       server_conf.allowed_method.end(),
+                       method )
+             != server_conf.allowed_method.end() ) {
         return TRUE;
     }
     return FALSE;
@@ -63,10 +68,14 @@ std::string ft::Response::makeResponse()
     response.append( "\r\n" );
     response.append( "Content-Length: " );
     response.append( NumberToString( getContentLength() ) );
+    response.append( "\r\n" );
+    response.append( "Connection: keep-alive" );
     response.append( "\r\n\r\n" );
     response.append( body );
 
     logger.debug( "Content Type: " + getContentType() );
+    logger.debug( "Content Length: " + NumberToString( getContentLength() ) );
+    logger.debug( "Body: " + body );
 
     return response;
 }
