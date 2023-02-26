@@ -30,20 +30,8 @@ ft::Response::Response( Request request, Config server_conf ) :
         return;
     }
 
-    if ( request.cgi_path != "" ) {
-        Cgi_handler cgi( request );
-        cgi.run();
-        body = cgi.get_response_body();
-        setStatusCode( status_codes.getStatusCode( 200 ) );
-        return;
-    }
-
-    if ( request.method == "GET" ) {
+        if ( request.method == "GET" ) {
         handleGet();
-    }
-
-    if ( request.method == "POST" ) {
-        handlePost();
     }
 
     if ( request.method == "DELETE" ) {
@@ -82,10 +70,15 @@ std::string ft::Response::makeResponse()
     response.append( "\r\n" );
     response.append( "Connection: keep-alive" );
     response.append( "\r\n\r\n" );
+
+    // Check body limit and truncate if necessary
+    if ( server_conf.client_max_body_size
+         && getContentLength() > server_conf.client_max_body_size ) {
+        body = body.substr( 0, server_conf.client_max_body_size );
+    }
+
     response.append( body );
 
-    logger.debug( "Content Type: " + getContentType() );
-    logger.debug( "Content Length: " + NumberToString( getContentLength() ) );
     logger.debug( "Body: " + body );
 
     return response;

@@ -1,12 +1,37 @@
+#include "dirent.h"
 #include "response.hpp"
+
+static void createDirectoryListing( std::string path, std::string &body )
+{
+    DIR           *dir;
+    struct dirent *ent;
+    if ( ( dir = opendir( path.c_str() ) ) != NULL ) {
+        while ( ( ent = readdir( dir ) ) != NULL ) {
+            body.append( ent->d_name );
+            body.append( "" );
+        }
+        closedir( dir );
+    } else {
+        /* could not open directory */
+        logger.error( "Could not open directory" );
+    }
+}
 
 std::string ft::Response::getPath( std::string uri )
 {
     std::string rootDir = server_conf.root_dir;
     std::string path    = rootDir + uri;
-    if ( path[path.length() - 1] == '/' ) {
-        path.append( "index.html" );
+
+    // Check if request is for a directory
+    if ( server_conf.autoindex == "on" ) {
+        // Responde with a directory listing
+        createDirectoryListing( path, body );
+        setContentType( mime_types.getMimeType( ".html" ) );
+        setStatusCode( status_codes.getStatusCode( 200 ) );
+    } else {
+        path.append( server_conf.index[0] );
     }
+
     return path;
 }
 
@@ -35,9 +60,8 @@ void ft::Response::callErrorPage( std::string &body, std::string error_page )
         setContentType( mime_types.getMimeType( ".html" ) );
         setStatusCode( status_codes.getStatusCode( 404 ) );
     } else {
-        std::string errorPath = getPath( "/404.html" );
         setContentType( mime_types.getMimeType( ".html" ) );
-        readFromAFile( errorPath, body );
+        setBody( "<html><body><h1>404 Not Found</h1></body></html>" );
         setStatusCode( status_codes.getStatusCode( 404 ) );
     }
 }
@@ -50,6 +74,16 @@ void ft::Response::handleGet()
         = indexPath.substr( indexPath.find_last_of( "." ) + 1 );
 
     setContentType( mime_types.getMimeType( "." + extension ) );
+
+    if ( extension == "py" ) {
+        Cgi_handler cgi( request );
+        cgi.run();
+        setContentType( mime_types.getMimeType( ".html" ) );
+        body = cgi.get_response_body();
+        setStatusCode( status_codes.getStatusCode( 200 ) );
+        logger.debug( "CGI response: " + body );
+        return;
+    }
 
     if ( indexFile.is_open() ) {
         readFromAFile( indexPath, body );
