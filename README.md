@@ -43,6 +43,35 @@ We start the server by reading a configuration file based on nginx conf, contain
 curl -X GET -H "Content-Type: application/x-www-form-urlencoded" http://localhost:9000/cgi-bin/python-cgi
 ```
 
+#### How to stress test
+
+- You can stress test the serve using siege. First you need to donwload siege with:
+
+```
+sudo apt-get install siege
+```
+
+- You can run a basic stress test:
+
+```
+siege -c 100 -t 60s http://localhost:8000
+```
+- You can use siege -b (The siege -b option is used to run the Siege stress testing tool in benchmark mode. In benchmark mode, Siege sends a single request to the specified URL and measures the response time. The benchmark mode is useful for quickly testing the performance of a server without the need to simulate a large number of concurrent users);
+```
+siege -b http://localhost:8000
+```
+-You can check memory usage of webserv while using siege:
+
+Get the pid:
+```
+ps aux
+```
+Test memory usage:
+```
+top -p <pid>
+```
+
+
 ## References
 
 - [Web Server Concepts and Examples](https://www.youtube.com/watch?v=9J1nJOivdyw)
