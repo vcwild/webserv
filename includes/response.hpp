@@ -1,6 +1,7 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
+#include "cgi_handler.hpp"
 #include "mimetypes.hpp"
 #include "statusCodes.hpp"
 #include "utils.hpp"

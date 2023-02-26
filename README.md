@@ -37,6 +37,12 @@ We start the server by reading a configuration file based on nginx conf, contain
 - `curl -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json" -X POST localhost:8000`
 - `curl -d "param1=value1&param2=value2" -X DELETE localhost:8000`
 
+#### Execute CGI
+
+```sh
+curl -X GET -H "Content-Type: application/x-www-form-urlencoded" http://localhost:9000/cgi-bin/python-cgi
+```
+
 ## References
 
 - [Web Server Concepts and Examples](https://www.youtube.com/watch?v=9J1nJOivdyw)
