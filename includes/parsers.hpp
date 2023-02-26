@@ -37,6 +37,7 @@
 #define SERVER_KEY "Server"
 #define CONNECTION_KEY "Connection"
 #define KEEP_ALIVE_KEY "Keep-Alive"
+#define CGI_PATH "/cgi-bin/"
 
 /* METHODS */
 #define GET "GET"

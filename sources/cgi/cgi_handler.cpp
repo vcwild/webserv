@@ -22,13 +22,7 @@ Cgi_handler::~Cgi_handler()
     delete[] _env_vars_array;
 }
 
-void Cgi_handler::run()
-{
-
-    _response_body = exec_cgi( _cgi_request.cgi_path );
-
-    std::cout << _response_body << std::endl;
-}
+void Cgi_handler::run() { _response_body = exec_cgi( _cgi_request.cgi_path ); }
 
 /*The value of "SCRIPT_NAME" should be the URL path to the CGI script.
 For example, if the script is located at
