@@ -7,13 +7,16 @@ ft::Response::~Response() {}
 
 int ft::Response::isValidMethod( std::string method )
 {
-    if ( ( method == "GET" || method == "POST" || method == "DELETE" )
-         && std::find( server_conf.allowed_method.begin(),
-                       server_conf.allowed_method.end(),
-                       method )
-             != server_conf.allowed_method.end() ) {
-        return TRUE;
+    for ( std::vector<std::string>::iterator it
+          = server_conf.allowed_method.begin(),
+          end = server_conf.allowed_method.end();
+          it != end;
+          ++it ) {
+        if ( method == *it ) {
+            return TRUE;
+        }
     }
+    logger.warning( "Invalid method invoked by client: " + method );
     return FALSE;
 }
 
@@ -24,6 +27,14 @@ ft::Response::Response( Request request, Config server_conf ) :
     if ( !isValidMethod( request.method ) ) {
         setStatusCode( status_codes.getStatusCode( 405 ) );
         setBody( "Method not allowed" );
+        return;
+    }
+
+    if ( request.cgi_path != "" ) {
+        Cgi_handler cgi( request );
+        cgi.run();
+        body = cgi.get_response_body();
+        setStatusCode( status_codes.getStatusCode( 200 ) );
         return;
     }
 

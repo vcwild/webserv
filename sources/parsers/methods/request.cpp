@@ -84,6 +84,10 @@ void Request::setMethod( std::string &line )
     method  = request_line[0];
     uri     = request_line[1];
     version = request_line[2];
+
+    if ( ( uri ).find( CGI_PATH ) != std::string::npos ) {
+        cgi_path = "./www" + uri;
+    }
 }
 
 void Request::setAccept( std::string &line )
