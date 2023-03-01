@@ -44,7 +44,7 @@ public:
     std::string getPath( std::string uri );
     void        handleGet();
     void        handlePost();
+    void        handleDelete();
 };
-
 }
 #endif

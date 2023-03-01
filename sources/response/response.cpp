@@ -49,8 +49,7 @@ ft::Response::Response( Request request, Config server_conf ) :
     }
 
     if ( request.method == "DELETE" ) {
-        setStatusCode( status_codes.getStatusCode( 200 ) );
-        setBody( "DELETE" );
+        handleDelete();
     }
 }
 
