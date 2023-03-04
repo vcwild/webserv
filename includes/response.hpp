@@ -43,6 +43,7 @@ public:
     std::string makeResponse();
     int         isValidMethod( std::string method );
     std::string getPath( std::string uri );
+    int         canAutoIndex( std::string path );
     void        handleGet();
     void        handlePost();
     void        handleDelete();

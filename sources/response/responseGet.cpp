@@ -1,5 +1,8 @@
 #include "dirent.h"
 #include "response.hpp"
+#include <algorithm>
+#include <iostream>
+#include <string>
 
 /*
 static void createDirectoryListing( std::string path, std::string &body )
@@ -21,8 +24,9 @@ std::string ft::Response::getPath( std::string uri )
     std::string rootDir = server_conf.root_dir;
     std::string path    = rootDir + uri;
 
-    // Check if request is for a directory
-    path.append( server_conf.index[0] );
+    if ( path[path.length() - 1] == '/' ) {
+        path.append( "index.html" );
+    }
 
     return path;
 }
@@ -72,34 +76,79 @@ static int isDirectory( std::string path )
     }
 }
 
-void ft::Response::handleGet()
+static int isFile( std::string path )
 {
-    std::string   indexPath = getPath( request.uri );
-    std::ifstream indexFile( indexPath.c_str() );
-    std::string   extension
-        = indexPath.substr( indexPath.find_last_of( "." ) + 1 );
+    std::ifstream indexFile( path.c_str() );
 
-    setContentType( mime_types.getMimeType( "." + extension ) );
-    logger.info( "autoindex: " + server_conf.autoindex );
-    logger.info( "request uri: " + request.uri );
+    if ( indexFile.is_open() ) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
 
-    // log all routes from server_conf
+static std::string getFileExtension( std::string path )
+{
+    return path.substr( path.find_last_of( "." ) + 1 );
+}
+
+std::vector<std::string> split( std::string text, char separator = ' ' )
+{
+    std::string              str;
+    std::stringstream        ss( text );
+    std::vector<std::string> result;
+
+    while ( getline( ss, str, separator ) ) {
+        result.push_back( str );
+    }
+
+    return result;
+}
+
+int ft::Response::canAutoIndex( std::string path )
+{
+    logger.info( "Checking if autoindex is enabled" );
+    std::string cleanPath = split( path, '/' )[1];
+
+    // iterate over server_conf.routes and check if autoindex is enabled
     for ( std::vector<Route>::iterator it = server_conf.routes.begin();
           it != server_conf.routes.end();
           ++it ) {
-        logger.info( "route: " + it->location_dir );
+        logger.debug( "Location: " + it->location_dir );
+        if ( it->location_dir == ( "/" + cleanPath ) ) {
+            logger.info( "Autoindex: " + it->autoindex );
+            if ( it->autoindex == "on" ) {
+                logger.info( "Autoindex is enabled" );
+                return TRUE;
+            } else {
+                logger.info( "Autoindex is disabled" );
+                return FALSE;
+            }
+        }
     }
 
-    logger.info( "routes size: "
-                 + NumberToString( server_conf.routes.size() ) );
+    return TRUE;
+}
 
-    if ( isDirectory( server_conf.root_dir + indexPath )
-         && server_conf.autoindex == "on" ) {
-        std::string errorPath = getPath( "/404.html" );
+void ft::Response::handleGet()
+{
+    if ( isDirectory( server_conf.root_dir + request.uri ) ) {
         logger.info( "Request is for a directory" );
-        callErrorPage( body, server_conf.error_page[1] );
-    } else if ( indexFile.is_open() ) {
-        readFromAFile( indexPath, body );
+        if ( canAutoIndex( request.uri ) ) {
+            logger.info( "Allowed to auto index" );
+            std::string body;
+            // createDirectoryListing( getPath( request.uri ), body );
+            setContentType( mime_types.getMimeType( ".html" ) );
+            setBody( body );
+            setStatusCode( status_codes.getStatusCode( 200 ) );
+        } else {
+            callErrorPage( body, server_conf.error_page[1] );
+        }
+    } else if ( isFile( getPath( request.uri ) ) ) {
+        logger.info( "Request is for a file" );
+        readFromAFile( getPath( request.uri ), body );
+        setContentType( mime_types.getMimeType(
+            "." + getFileExtension( getPath( request.uri ) ) ) );
         setStatusCode( status_codes.getStatusCode( 200 ) );
     } else {
         callErrorPage( body, server_conf.error_page[1] );
