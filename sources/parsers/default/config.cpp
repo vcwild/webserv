@@ -27,10 +27,8 @@ Config::Config( std::vector<std::string>::iterator &it,
     root_dir             = "";
 
     while ( it != end ) {
-        if ( ( *it ).find( "location " ) != std::string::npos ) {
-            if ( routes.size() > 0 ) {
-                break;
-            }
+        if ( ( *it ).find( "location " ) != std::string::npos
+             && routes.size() <= 0 ) {
             std::vector<std::string >              tmpVec( it, end );
             std::vector<std::vector<std::string> > tmpRoutes
                 = splitLines( tmpVec, ROUTE_KEY, true );
@@ -48,6 +46,7 @@ Config::Config( std::vector<std::string>::iterator &it,
                 route.client_max_body_size = client_max_body_size;
                 route.autoindex            = autoindex;
                 routes.push_back( route );
+
                 ++it2;
             }
         }
