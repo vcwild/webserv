@@ -28,13 +28,15 @@ Config::Config( std::vector<std::string>::iterator &it,
 
     while ( it != end ) {
         if ( ( *it ).find( "location " ) != std::string::npos ) {
+            if ( routes.size() > 0 ) {
+                break;
+            }
             std::vector<std::string >              tmpVec( it, end );
             std::vector<std::vector<std::string> > tmpRoutes
                 = splitLines( tmpVec, ROUTE_KEY, true );
 
             std::vector<std::vector<std::string> >::iterator it2
                 = tmpRoutes.begin();
-
             while ( it2 != tmpRoutes.end() ) {
                 std::vector<std::string>::iterator it3 = it2->begin();
                 Route                              route;
