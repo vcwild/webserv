@@ -44,7 +44,8 @@ public:
     int         isValidMethod( std::string method );
     std::string getPath( std::string uri );
     void        handleGet();
+    void        handlePost();
+    void        handleDelete();
 };
-
 }
 #endif
