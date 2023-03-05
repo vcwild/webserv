@@ -43,8 +43,8 @@ Config::Config( std::vector<std::string>::iterator &it,
                     setRouteAttributes( route, *it3 );
                     ++it3;
                 }
+
                 route.client_max_body_size = client_max_body_size;
-                route.autoindex            = autoindex;
                 routes.push_back( route );
 
                 ++it2;
@@ -59,6 +59,8 @@ void Config::setRouteAttributes( Route &route, std::string &line )
 {
     if ( ( line ).find( ROOT_KEY ) != std::string::npos ) {
         route.root = handleKey( line );
+    } else if ( ( line ).find( AUTOINDEX_KEY ) != std::string::npos ) {
+        route.autoindex = handleKey( line );
     } else if ( ( line ).find( INDEX_KEY ) != std::string::npos ) {
         route.index = handleKey( line );
     } else if ( ( line ).find( CGI_KEY ) != std::string::npos ) {
@@ -88,7 +90,6 @@ void Config::setConfig( std::string &line )
         istringstream( handleKey( line ) ) >> client_max_body_size;
     } else if ( line.find( AUTOINDEX_KEY ) != std::string::npos ) {
         autoindex = handleKey( line );
-
     } else if ( ( index.size() <= 0 )
                 && line.find( INDEX_KEY ) != std::string::npos ) {
         index = handleVectorKey( line );
