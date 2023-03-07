@@ -13,7 +13,7 @@ def handle_req():
     cgitb.enable()
 
     form = cgi.FieldStorage()
-    s = form.getvalue('name')
+    s = str(form.getvalue('name'))
     if len(s) <= 4:
         print("<H1>Error</H1>")
         print("Please fill in a name with at least 5 characters.")
