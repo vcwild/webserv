@@ -23,10 +23,9 @@ int ft::Response::isValidMethod( std::string method )
 ft::Response::Response( Request request, Config server_conf ) :
     request( request ), server_conf( server_conf )
 {
-
     if ( !isValidMethod( request.method ) ) {
         setStatusCode( status_codes.getStatusCode( 405 ) );
-        setBody( "Method not allowed" );
+        setBody( "Method not allowed \n" );
         return;
     }
 
