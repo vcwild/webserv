@@ -13,13 +13,13 @@ def handle_req():
     cgitb.enable()
 
     form = cgi.FieldStorage()
-    s = form.getvalue('searchbox')
+    s = form.getvalue('name')
     if len(s) <= 4:
         print("<H1>Error</H1>")
         print("Please fill in a name with at least 5 characters.")
         return
 
-    print(f"<H1>Hello there {clean_string(s)}!<H1>")
+    print(f"<h1>Hello there {clean_string(s)}!<h1>")
 
 if __name__ == "__main__":
     handle_req()
