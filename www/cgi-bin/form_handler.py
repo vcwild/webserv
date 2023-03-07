@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 
+
+def clean_string(s):
+    import string
+    valid_chars = string.ascii_letters + string.digits + " "
+    return "".join(c for c in s if c in valid_chars).strip()
+
 def handle_req():
     import cgi
     import cgitb
@@ -7,13 +13,13 @@ def handle_req():
     cgitb.enable()
 
     form = cgi.FieldStorage()
-    searchterm = form.getvalue('searchbox')
-    if len(searchterm) != len(searchterm.encode()):
+    s = form.getvalue('searchbox')
+    if len(s) <= 4:
         print("<H1>Error</H1>")
-        print("Please fill in the name and addr fields.")
+        print("Please fill in a name with at least 5 characters.")
         return
 
-    print(f"<H1>Hello there {searchterm}!<H1>")
+    print(f"<H1>Hello there {clean_string(s)}!<H1>")
 
 if __name__ == "__main__":
     handle_req()
