@@ -77,7 +77,5 @@ std::string ft::Response::makeResponse()
 
     response.append( body );
 
-    logger.debug( "Body: " + body );
-
     return response;
 }

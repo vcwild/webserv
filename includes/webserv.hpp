@@ -74,6 +74,7 @@ struct Request
     void setConcentLength( std::string &line );
     void setContentType( std::string &line );
     void setBody( const char *buf );
+    void display();
 };
 
 struct Response

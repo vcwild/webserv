@@ -146,7 +146,8 @@ void Server::accept_connections()
                 } else {
                     read_request_data( connection_socket, 1024 );
                     Request request( requests[connection_socket].c_str() );
-                    Config  server_conf = this->servers_conf[i];
+                    request.display();
+                    Config server_conf = this->servers_conf[i];
 
                     ft::Response response( request, server_conf );
                     send_response( connection_socket, response );

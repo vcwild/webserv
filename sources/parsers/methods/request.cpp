@@ -81,8 +81,21 @@ void Request::setMethod( std::string &line )
     std::vector<std::string> request_line
         = split( removeSpecialCharacters( line, "\r" ), " " );
 
-    method  = request_line[0];
-    uri     = request_line[1];
+    method = request_line[0];
+
+    if ( ( request_line[1] ).find( "?" ) != std::string::npos ) {
+
+        logger.debug( "Request has query" );
+        std::vector<std::string> uri_line
+            = split( removeSpecialCharacters( request_line[1], "\r" ), "?" );
+        logger.debug( "URI: " + uri_line[0] );
+        logger.debug( "Query: " + uri_line[1] );
+        uri   = uri_line[0];
+        query = uri_line[1];
+    } else {
+        uri = request_line[1];
+    }
+
     version = request_line[2];
 
     if ( ( uri ).find( CGI_PATH ) != std::string::npos ) {
@@ -120,4 +133,24 @@ void Request::setBody( const char *buf )
 
     std::string substr = findSubstring( tmp, "\r\n\r\n" );
     body               = substr;
+}
+
+void Request::display()
+{
+    logger.debug( "Method: " + method );
+    logger.debug( "Host: " + host );
+    logger.debug( "Port: " + port );
+    logger.debug( "URI: " + uri );
+    logger.debug( "Version: " + version );
+    if ( content_type != "" )
+        logger.debug( "Content-Type: " + content_type );
+    logger.debug( "User-Agent: " + user_agent );
+    if ( authorization != "" )
+        logger.debug( "Authorization: " + authorization );
+    if ( query != "" )
+        logger.debug( "Query: " + query );
+    if ( cgi_path != "" )
+        logger.debug( "CGI-Path: " + cgi_path );
+    if ( body != "" )
+        logger.debug( "Body: " + body );
 }
