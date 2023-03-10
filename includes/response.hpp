@@ -34,10 +34,12 @@ public:
     std::string statusCode;
     std::string body;
     Config      server_conf;
+    std::string location;
 
     int         getContentLength();
     void        setStatusCode( std::string code );
     void        setBody( std::string body );
+    void        setLocation( std::string location );
     void        setContentType( std::string type );
     std::string getContentType();
     std::string makeResponse();
@@ -45,6 +47,7 @@ public:
     void createDirectoryListingIntoHTML( std::string path, std::string &body );
     std::string getPath( std::string uri );
     int         canAutoIndex( std::string path );
+    int         checkRedirect();
     void        handleGet();
     void        handlePost();
     void        handleDelete();

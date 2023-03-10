@@ -54,6 +54,11 @@ std::string ft::Response::getContentType() { return this->_contentType; }
 
 void ft::Response::setBody( std::string body ) { this->body = body; }
 
+void ft::Response::setLocation( std::string location )
+{
+    this->location = location;
+}
+
 std::string ft::Response::makeResponse()
 {
     std::string response;
@@ -68,6 +73,12 @@ std::string ft::Response::makeResponse()
     response.append( "\r\n" );
     response.append( "Connection: keep-alive" );
     response.append( "\r\n\r\n" );
+
+    if ( location.length() > 0 ) {
+        response.append( "Location: " );
+        response.append( location );
+        response.append( "\r\n" );
+    }
 
     // Check body limit and truncate if necessary
     if ( server_conf.client_max_body_size
