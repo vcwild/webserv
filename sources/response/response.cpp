@@ -83,7 +83,5 @@ std::string ft::Response::makeResponse()
     response.append( "\r\n\r\n" );
     response.append( body );
 
-    logger.debug( "Content Type: " + getContentType() );
-
     return response;
 }
