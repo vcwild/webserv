@@ -1,5 +1,4 @@
 #include "response.hpp"
-#include <algorithm>
 
 ft::Response::Response() {}
 
@@ -20,9 +19,32 @@ int ft::Response::isValidMethod( std::string method )
     return FALSE;
 }
 
+int ft::Response::isLocation( std::string path )
+{
+    std::string cleanPath = ftSplit( path, '/' )[1];
+
+    for ( std::vector<Route>::iterator it = server_conf.routes.begin();
+          it != server_conf.routes.end();
+          ++it ) {
+        if ( it->location_dir == ( "/" + cleanPath ) ) {
+            using_route = *it;
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 ft::Response::Response( Request request, Config server_conf ) :
     request( request ), server_conf( server_conf )
 {
+    if ( isLocation( request.uri ) ) {
+        if ( !isValidMethod( using_route.allow_methods ) ) {
+            setStatusCode( status_codes.getStatusCode( 405 ) );
+            setBody( "Method not allowed \n" );
+            return;
+        }
+    }
+
     if ( !isValidMethod( request.method ) ) {
         setStatusCode( status_codes.getStatusCode( 405 ) );
         setBody( "Method not allowed \n" );

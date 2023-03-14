@@ -11,6 +11,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <iostream>
+#include <string>
+
 #define TRUE 1
 #define FALSE 0
 
@@ -34,6 +38,7 @@ public:
     std::string statusCode;
     std::string body;
     Config      server_conf;
+    Route       using_route;
 
     int         getContentLength();
     void        setStatusCode( std::string code );
@@ -48,6 +53,7 @@ public:
     void        handleGet();
     void        handlePost();
     void        handleDelete();
+    int         isLocation( std::string path );
 };
 }
 #endif
