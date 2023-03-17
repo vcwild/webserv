@@ -7,7 +7,7 @@ std::string NumberToString( int Number )
     return ss.str();
 }
 
-std::vector<std::string> ftSplit( std::string text, char separator = ' ' )
+std::vector<std::string> ftSplit( std::string text, char separator )
 {
     std::string              str;
     std::stringstream        ss( text );

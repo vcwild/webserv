@@ -7,6 +7,6 @@
 #include <iostream>
 
 std::string              NumberToString( int Number );
-std::vector<std::string> ftSplit( std::string text, char separator = ' ' );
+std::vector<std::string> ftSplit( std::string text, char separator );
 
 #endif
