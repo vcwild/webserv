@@ -4,11 +4,11 @@ ft::Response::Response() {}
 
 ft::Response::~Response() {}
 
-int ft::Response::isValidMethod( std::string method )
+int ft::Response::isValidMethod( std::string              method,
+                                 std::vector<std::string> allowed_methods )
 {
-    for ( std::vector<std::string>::iterator it
-          = server_conf.allowed_method.begin(),
-          end = server_conf.allowed_method.end();
+    for ( std::vector<std::string>::iterator it  = allowed_methods.begin(),
+                                             end = allowed_methods.end();
           it != end;
           ++it ) {
         if ( method == *it ) {
@@ -38,14 +38,14 @@ ft::Response::Response( Request request, Config server_conf ) :
     request( request ), server_conf( server_conf )
 {
     if ( isLocation( request.uri ) ) {
-        if ( !isValidMethod( using_route.allow_methods ) ) {
+        if ( !isValidMethod( request.method, using_route.allow_methods ) ) {
             setStatusCode( status_codes.getStatusCode( 405 ) );
             setBody( "Method not allowed \n" );
             return;
         }
     }
 
-    if ( !isValidMethod( request.method ) ) {
+    if ( !isValidMethod( request.method, server_conf.allowed_method ) ) {
         setStatusCode( status_codes.getStatusCode( 405 ) );
         setBody( "Method not allowed \n" );
         return;

@@ -46,7 +46,8 @@ public:
     void        setContentType( std::string type );
     std::string getContentType();
     std::string makeResponse();
-    int         isValidMethod( std::string method );
+    int         isValidMethod( std::string              method,
+                               std::vector<std::string> allowed_methods );
     void createDirectoryListingIntoHTML( std::string path, std::string &body );
     std::string getPath( std::string uri );
     int         canAutoIndex( std::string path );
