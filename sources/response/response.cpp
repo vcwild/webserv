@@ -1,4 +1,5 @@
 #include "response.hpp"
+#include <algorithm>
 
 ft::Response::Response() {}
 
@@ -6,9 +7,6 @@ ft::Response::~Response() {}
 
 int ft::Response::isValidMethod( std::string method )
 {
-
-    ;
-
     for ( std::vector<std::string>::iterator it
           = server_conf.allowed_method.begin(),
           end = server_conf.allowed_method.end();
@@ -25,27 +23,14 @@ int ft::Response::isValidMethod( std::string method )
 ft::Response::Response( Request request, Config server_conf ) :
     request( request ), server_conf( server_conf )
 {
-
     if ( !isValidMethod( request.method ) ) {
         setStatusCode( status_codes.getStatusCode( 405 ) );
-        setBody( "Method not allowed" );
-        return;
-    }
-
-    if ( request.cgi_path != "" ) {
-        Cgi_handler cgi( request );
-        cgi.run();
-        body = cgi.get_response_body();
-        setStatusCode( status_codes.getStatusCode( 200 ) );
+        setBody( "Method not allowed \n" );
         return;
     }
 
     if ( request.method == "GET" ) {
         handleGet();
-    }
-
-    if ( request.method == "POST" ) {
-        handlePost();
     }
 
     if ( request.method == "DELETE" ) {
@@ -69,6 +54,11 @@ std::string ft::Response::getContentType() { return this->_contentType; }
 
 void ft::Response::setBody( std::string body ) { this->body = body; }
 
+void ft::Response::setLocation( std::string location )
+{
+    this->location = location;
+}
+
 std::string ft::Response::makeResponse()
 {
     std::string response;
@@ -80,7 +70,22 @@ std::string ft::Response::makeResponse()
     response.append( "\r\n" );
     response.append( "Content-Length: " );
     response.append( NumberToString( getContentLength() ) );
+    response.append( "\r\n" );
+    response.append( "Connection: keep-alive" );
     response.append( "\r\n\r\n" );
+
+    if ( location.length() > 0 ) {
+        response.append( "Location: " );
+        response.append( location );
+        response.append( "\r\n" );
+    }
+
+    // Check body limit and truncate if necessary
+    if ( server_conf.client_max_body_size
+         && getContentLength() > server_conf.client_max_body_size ) {
+        body = body.substr( 0, server_conf.client_max_body_size );
+    }
+
     response.append( body );
 
     return response;
