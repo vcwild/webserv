@@ -1,5 +1,34 @@
 #include "dirent.h"
 #include "response.hpp"
+#include <algorithm>
+#include <iostream>
+#include <string>
+
+void ft::Response::createDirectoryListingIntoHTML( std::string  path,
+                                                   std::string &body )
+{
+    DIR           *dir;
+    struct dirent *ent;
+    if ( ( dir = opendir( path.c_str() ) ) != NULL ) {
+        body.append( "<html><head><title>Index of " + path
+                     + "</title></head>"
+                       "<body><h1>Index of "
+                     + path + "</h1>" );
+        while ( ( ent = readdir( dir ) ) != NULL ) {
+            std::string name = ent->d_name;
+            if ( name != "." && name != ".." ) {
+                body.append( "<a href=\"" + request.uri + "/" + name + "\">"
+                             + name + "</a><br>" );
+            }
+        }
+        body.append( "</body></html>" );
+        closedir( dir );
+    } else {
+        setContentType( mime_types.getMimeType( ".html" ) );
+        setBody( "<html><body><h1>404 Not Found Directory</h1></body></html>" );
+        setStatusCode( status_codes.getStatusCode( 404 ) );
+    }
+}
 
 void ft::Response::createDirectoryListingIntoHTML( std::string  path,
                                                    std::string &body )
