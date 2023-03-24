@@ -54,9 +54,6 @@ public:
     std::string getPath( std::string uri );
     int         canAutoIndex( std::string path );
     int         isValidMethod( std::string method );
-    void createDirectoryListingIntoHTML( std::string path, std::string &body );
-    std::string getPath( std::string uri );
-    int         canAutoIndex( std::string path );
     int         checkRedirect();
     void        handleGet();
     void        handlePost();
