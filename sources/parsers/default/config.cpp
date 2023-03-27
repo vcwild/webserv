@@ -27,14 +27,14 @@ Config::Config( std::vector<std::string>::iterator &it,
     root_dir             = "";
 
     while ( it != end ) {
-        if ( ( *it ).find( "location " ) != std::string::npos
-             && routes.size() <= 0 ) {
+        if ( ( *it ).find( "location " ) != std::string::npos ) {
             std::vector<std::string >              tmpVec( it, end );
             std::vector<std::vector<std::string> > tmpRoutes
                 = splitLines( tmpVec, ROUTE_KEY, true );
 
             std::vector<std::vector<std::string> >::iterator it2
                 = tmpRoutes.begin();
+
             while ( it2 != tmpRoutes.end() ) {
                 std::vector<std::string>::iterator it3 = it2->begin();
                 Route                              route;
@@ -43,10 +43,9 @@ Config::Config( std::vector<std::string>::iterator &it,
                     setRouteAttributes( route, *it3 );
                     ++it3;
                 }
-
                 route.client_max_body_size = client_max_body_size;
+                route.autoindex            = autoindex;
                 routes.push_back( route );
-
                 ++it2;
             }
         }
@@ -59,8 +58,6 @@ void Config::setRouteAttributes( Route &route, std::string &line )
 {
     if ( ( line ).find( ROOT_KEY ) != std::string::npos ) {
         route.root = handleKey( line );
-    } else if ( ( line ).find( AUTOINDEX_KEY ) != std::string::npos ) {
-        route.autoindex = handleKey( line );
     } else if ( ( line ).find( INDEX_KEY ) != std::string::npos ) {
         route.index = handleKey( line );
     } else if ( ( line ).find( CGI_KEY ) != std::string::npos ) {
@@ -90,6 +87,7 @@ void Config::setConfig( std::string &line )
         istringstream( handleKey( line ) ) >> client_max_body_size;
     } else if ( line.find( AUTOINDEX_KEY ) != std::string::npos ) {
         autoindex = handleKey( line );
+
     } else if ( ( index.size() <= 0 )
                 && line.find( INDEX_KEY ) != std::string::npos ) {
         index = handleVectorKey( line );
