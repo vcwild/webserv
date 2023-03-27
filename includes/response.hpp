@@ -24,7 +24,6 @@ class Response {
 private:
     Request     request;
     std::string _contentType;
-    void        callErrorPage( std::string &body, std::string error_page );
 
 public:
     Response();
@@ -34,20 +33,15 @@ public:
     std::string statusCode;
     std::string body;
     Config      server_conf;
-    std::string location;
 
     int         getContentLength();
     void        setStatusCode( std::string code );
     void        setBody( std::string body );
-    void        setLocation( std::string location );
     void        setContentType( std::string type );
     std::string getContentType();
     std::string makeResponse();
     int         isValidMethod( std::string method );
-    void createDirectoryListingIntoHTML( std::string path, std::string &body );
     std::string getPath( std::string uri );
-    int         canAutoIndex( std::string path );
-    int         checkRedirect();
     void        handleGet();
     void        handlePost();
     void        handleDelete();

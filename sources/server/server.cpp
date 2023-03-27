@@ -91,8 +91,7 @@ int Server::create_sockets()
 
         // add the socket file descriptor to the vector
         sockets.push_back( sockfd );
-        logger.info( "Server started on port 🚪: http://"
-                     + server_conf.server_name + ":"
+        logger.info( "Server started on port 🚪: "
                      + NumberToString( server_conf.listen_port ) );
     }
     return 0;
