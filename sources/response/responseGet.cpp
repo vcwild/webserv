@@ -1,8 +1,5 @@
 #include "dirent.h"
 #include "response.hpp"
-#include <algorithm>
-#include <iostream>
-#include <string>
 
 void ft::Response::createDirectoryListingIntoHTML( std::string  path,
                                                    std::string &body )
@@ -102,22 +99,9 @@ static std::string getFileExtension( std::string path )
     return path.substr( path.find_last_of( "." ) + 1 );
 }
 
-std::vector<std::string> split( std::string text, char separator = ' ' )
-{
-    std::string              str;
-    std::stringstream        ss( text );
-    std::vector<std::string> result;
-
-    while ( getline( ss, str, separator ) ) {
-        result.push_back( str );
-    }
-
-    return result;
-}
-
 int ft::Response::canAutoIndex( std::string path )
 {
-    std::string cleanPath = split( path, '/' )[1];
+    std::string cleanPath = ftSplit( path, '/' )[1];
 
     for ( std::vector<Route>::iterator it = server_conf.routes.begin();
           it != server_conf.routes.end();
