@@ -70,7 +70,6 @@ void ft::Response::callErrorPage( std::string &body, std::string error_page )
     }
 }
 
-// function to check if the request is for a directory or a file
 static int isDirectory( std::string path )
 {
     DIR *dir = opendir( path.c_str() );
@@ -118,8 +117,41 @@ int ft::Response::canAutoIndex( std::string path )
     return TRUE;
 }
 
+static void makeRedirectFile( std::string &body, std::string location )
+{
+    body.append( "<html><head><title>301 Moved Permanently</title>"
+                 "<script>window.location.replace('"
+                 + location + "');</script>"
+                 + "</head><body><h1>Moved Permanently</h1><p>The "
+                 + "document has moved <a href=\"" + location
+                 + "\">here</a>.</p></body></html>" );
+}
+
+int ft::Response::checkRedirect()
+{
+    for ( std::vector<Route>::iterator it = server_conf.routes.begin();
+          it != server_conf.routes.end();
+          ++it ) {
+        if ( it->location_dir == request.uri ) {
+            if ( it->http_redirection.size() > 0 ) {
+                setStatusCode( status_codes.getStatusCode( 301 ) );
+                setLocation( it->http_redirection[0] );
+                // body with a script to redirect to the new location
+                setContentType( mime_types.getMimeType( ".html" ) );
+                makeRedirectFile( body, it->http_redirection[0] );
+                return TRUE;
+            }
+        }
+    }
+    return FALSE;
+}
+
 void ft::Response::handleGet()
 {
+    if ( checkRedirect() ) {
+        return;
+    }
+
     if ( isDirectory( server_conf.root_dir + request.uri ) ) {
         if ( request.uri == "/" ) {
             setContentType( mime_types.getMimeType( ".html" ) );
