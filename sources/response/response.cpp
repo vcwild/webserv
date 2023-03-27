@@ -37,7 +37,8 @@ int ft::Response::isLocation( std::string path )
 ft::Response::Response( Request request, Config server_conf ) :
     request( request ), server_conf( server_conf )
 {
-    if ( isLocation( request.uri ) ) {
+    if ( request.uri != "/" && request.uri != ""
+         && isLocation( request.uri ) ) {
         if ( !isValidMethod( request.method, using_route.allow_methods ) ) {
             setStatusCode( status_codes.getStatusCode( 405 ) );
             setBody( "Method not allowed \n" );
