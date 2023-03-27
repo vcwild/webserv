@@ -11,6 +11,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <iostream>
+#include <string>
+
 #define TRUE 1
 #define FALSE 0
 
@@ -34,6 +38,7 @@ public:
     std::string statusCode;
     std::string body;
     Config      server_conf;
+    Route       using_route;
 
     int         getContentLength();
     void        setStatusCode( std::string code );
@@ -41,13 +46,15 @@ public:
     void        setContentType( std::string type );
     std::string getContentType();
     std::string makeResponse();
-    int         isValidMethod( std::string method );
+    int         isValidMethod( std::string              method,
+                               std::vector<std::string> allowed_methods );
     void createDirectoryListingIntoHTML( std::string path, std::string &body );
     std::string getPath( std::string uri );
     int         canAutoIndex( std::string path );
     void        handleGet();
     void        handlePost();
     void        handleDelete();
+    int         isLocation( std::string path );
 };
 }
 #endif
