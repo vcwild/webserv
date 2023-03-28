@@ -37,6 +37,14 @@ int ft::Response::isLocation( std::string path )
 ft::Response::Response( Request request, Config server_conf ) :
     request( request ), server_conf( server_conf )
 {
+    if (server_conf.server_name != request.host) {
+   
+        setStatusCode("400 Bad Request");
+        setContentType("text/plain");
+        setBody("Invalid Host");
+        return; 
+    }
+
     if ( request.uri != "/" && request.uri != ""
          && isLocation( request.uri ) ) {
         if ( !isValidMethod( request.method, using_route.allow_methods ) ) {
