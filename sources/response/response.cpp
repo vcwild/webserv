@@ -45,6 +45,13 @@ ft::Response::Response( Request request, Config server_conf ) :
         return; 
     }
 
+   if (server_conf.client_max_body_size != -1 && static_cast<int>(request.body.size()) > static_cast<int>(server_conf.client_max_body_size)) {
+        setStatusCode("413 Payload Too Large");
+        setContentType("text/plain");
+        setBody("Request body size exceeds the limit.");
+        return;
+    }
+
     if ( request.uri != "/" && request.uri != ""
          && isLocation( request.uri ) ) {
         if ( !isValidMethod( request.method, using_route.allow_methods ) ) {
@@ -111,11 +118,8 @@ std::string ft::Response::makeResponse()
         response.append( "\r\n" );
     }
 
-    // Check body limit and truncate if necessary
-    if ( server_conf.client_max_body_size
-         && getContentLength() > server_conf.client_max_body_size ) {
-        body = body.substr( 0, server_conf.client_max_body_size );
-    }
+   
+
 
     response.append( body );
 

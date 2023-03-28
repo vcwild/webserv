@@ -149,7 +149,7 @@ void Server::accept_connections()
                     logger.error( "Error accepting connection" );
                     close( server_socket );
                 } else {
-                    read_request_data( connection_socket, 1024 );
+                    read_request_data( connection_socket, 1024);
                     Request request( requests[connection_socket].c_str() );
                     request.display();
                     Config server_conf = this->servers_conf[i];
