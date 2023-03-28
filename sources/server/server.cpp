@@ -55,7 +55,8 @@ int Server::create_sockets()
         int sockfd = socket( AF_INET, SOCK_STREAM, 0 );
         if ( sockfd < 0 ) {
             logger.error( "Error creating socket" );
-            return FALSE;
+            close(sockfd);
+            exit( -1); 
         }
 
         int on = 1; // used for setsockopt
@@ -67,7 +68,8 @@ int Server::create_sockets()
         if ( fcntl( sockfd, F_SETFL, O_NONBLOCK ) < 0 ) {
             // there was an error setting the flags
             logger.error( "Error setting flags for socket" );
-            return FALSE;
+            close(sockfd);
+            exit( -1); 
         }
 
         // bind the socket to the port specified in the configuration file
@@ -81,12 +83,14 @@ int Server::create_sockets()
              < 0 ) {
             logger.error( "Error binding socket to port "
                           + NumberToString( server_conf.listen_port ) );
-            return FALSE;
+           close(sockfd);
         }
+        else
+        {
 
         if ( listen( sockfd, SOMAXCONN ) < 0 ) {
             logger.error( "Error setting socket to listen" );
-            return FALSE;
+          
         }
 
         // add the socket file descriptor to the vector
@@ -94,6 +98,7 @@ int Server::create_sockets()
         logger.info( "Server started on port 🚪: http://"
                      + server_conf.server_name + ":"
                      + NumberToString( server_conf.listen_port ) );
+        }
     }
     return 0;
 }
