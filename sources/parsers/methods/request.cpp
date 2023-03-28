@@ -76,10 +76,39 @@ void Request::setHost( std::string &line )
     port = host_line[2];
 }
 
+static bool isInvalidRequest( std::vector<std::string> &req )
+{
+    if ( req.size() != 3 ) {
+        return true;
+    }
+    return false;
+}
+
+static bool isDeleteWithKeyValue( std::vector<std::string> &req )
+{
+    std::string r = req[0];
+
+    if ( r.find( "=" ) != std::string::npos
+         && r.find( "DELETE" ) != std::string::npos )
+        return true;
+    return false;
+}
+
 void Request::setMethod( std::string &line )
 {
     std::vector<std::string> request_line
         = split( removeSpecialCharacters( line, "\r" ), " " );
+
+    if ( isInvalidRequest( request_line ) ) {
+        if ( !isDeleteWithKeyValue( request_line ) ) {
+            logger.error( "Unhandled method is provided" );
+            return;
+        }
+        method  = "DELETE";
+        uri     = "/";
+        version = "HTTP/1.1";
+        return;
+    }
 
     method = request_line[0];
 
