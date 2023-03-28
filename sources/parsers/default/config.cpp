@@ -4,7 +4,7 @@ Config::Config()
 {
     listen_port          = 0;
     server_name          = "";
-    client_max_body_size = 0;
+    client_max_body_size = -1;
     index                = std::vector<std::string>();
     allowed_method       = std::vector<std::string>();
     error_page           = std::vector<std::string>();
@@ -18,7 +18,7 @@ Config::Config( std::vector<std::string>::iterator &it,
 {
     listen_port          = 0;
     server_name          = "";
-    client_max_body_size = 0;
+    client_max_body_size = -1;
     index                = std::vector<std::string>();
     allowed_method       = std::vector<std::string>();
     error_page           = std::vector<std::string>();
