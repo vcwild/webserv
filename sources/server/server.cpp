@@ -166,7 +166,7 @@ void Server::accept_connections()
 
 int Server::read_request_data( int socket, int request_size )
 {
-    char request_buf[request_size]; // buffer to store the request data
+    char request_buf[request_size + 1]; // buffer to store the request data
     int  bytes_received = recv( socket, request_buf, request_size, 0 );
 
     // check for errors
@@ -183,6 +183,7 @@ int Server::read_request_data( int socket, int request_size )
     }
 
     if ( bytes_received > 0 ) {
+        request_buf[bytes_received] = '\0';
         requests[socket] = request_buf;
     }
 
