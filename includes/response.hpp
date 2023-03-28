@@ -11,6 +11,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <iostream>
+#include <string>
+
 #define TRUE 1
 #define FALSE 0
 
@@ -24,6 +28,7 @@ class Response {
 private:
     Request     request;
     std::string _contentType;
+    void        callErrorPage( std::string &body, std::string error_page );
 
 public:
     Response();
@@ -33,18 +38,26 @@ public:
     std::string statusCode;
     std::string body;
     Config      server_conf;
+    std::string location;
+    Route       using_route;
 
     int         getContentLength();
     void        setStatusCode( std::string code );
     void        setBody( std::string body );
+    void        setLocation( std::string location );
     void        setContentType( std::string type );
     std::string getContentType();
     std::string makeResponse();
-    int         isValidMethod( std::string method );
+    int         isValidMethod( std::string              method,
+                               std::vector<std::string> allowed_methods );
+    void createDirectoryListingIntoHTML( std::string path, std::string &body );
     std::string getPath( std::string uri );
+    int         canAutoIndex( std::string path );
+    int         checkRedirect();
     void        handleGet();
     void        handlePost();
     void        handleDelete();
+    int         isLocation( std::string path );
 };
 }
 #endif
