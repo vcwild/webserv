@@ -152,6 +152,19 @@ void ft::Response::handleGet()
         return;
     }
 
+    if ( using_route.index.size() > 0 ) {
+        setContentType( mime_types.getMimeType( ".html" ) );
+        if ( readFromAFile( getPath( request.uri + using_route.index ),
+                            body ) ) {
+            setStatusCode( status_codes.getStatusCode( 200 ) );
+            return;
+        } else {
+            callErrorPage( body, server_conf.error_page[1] );
+            return;
+        }
+        return;
+    }
+
     if ( isDirectory( server_conf.root_dir + request.uri ) ) {
         if ( request.uri == "/" ) {
             setContentType( mime_types.getMimeType( ".html" ) );
