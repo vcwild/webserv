@@ -41,9 +41,10 @@ Request::Request( const char *buf )
 
     setBody( buf );
     while ( std::getline( ss, line ) ) {
-        if ( ( line ).find( GET ) != std::string::npos
-             || ( line ).find( POST ) != std::string::npos
-             || ( line ).find( DELETE ) != std::string::npos ) {
+        if ( method == ""
+             && ( ( line ).find( GET ) != std::string::npos
+                  || ( line ).find( POST ) != std::string::npos
+                  || ( line ).find( DELETE ) != std::string::npos ) ) {
             setMethod( line );
         } else if ( ( line ).find( HOST_KEY ) != std::string::npos ) {
             setHost( line );
