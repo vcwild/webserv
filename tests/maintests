@@ -1,0 +1,30 @@
+Multiple ports:
+curl -v http://localhost:8000/ 
+curl -v http://localhost:9000/ 
+Multiple Hosts: 
+curl --resolve example.com:8080:127.0.0.1 http://example.com:8080
+Error Page: 
+curl -v http://localhost:8000/error
+Client Body Size:
+curl -X POST -H "Content-Type: plain/text" --data "BODY IS HERE write something shorter or longer than body limi"
+
+Routes to different directories:
+curl -v http://localhost:8000/directory
+Default file to search in a directory:
+curl -v http://localhost:8000/teste2/teste.html
+AllowedMethods:
+curl -v -X POST -d "data_to_send" http://localhost:8000/  
+
+Basic Get:
+curl -v http://localhost:8000/ 
+Basic Post:
+curl -v -X POST -d "data_to_send" http://localhost:8000/  
+Basic Delete:
+curl -v -X DELETE http://localhost:8000/
+Basic Unknow:
+curl -v -X UNKNOWN http://localhost:8000/
+Basic Upload:
+curl -X POST -H "Content-Type:multipart/form-data" -F "file=@teste.txt" http://localhost:8000/
+
+SIEGE Tests:
+siege -b http://localhost:8000
