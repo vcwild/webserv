@@ -1,3 +1,4 @@
+#include "cgi_handler.hpp"
 #include "response.hpp"
 
 std::string ft::Response::generateFileName()
@@ -17,6 +18,14 @@ std::string ft::Response::generateFileName()
 void ft::Response::handlePost()
 {
     std::string path = getPath( request.uri );
+
+    if ( request.cgi_path != "" ) {
+        Cgi_handler handler( request );
+        handler.run();
+        setStatusCode( status_codes.getStatusCode( 200 ) );
+        setContentType( mime_types.getMimeType( ".html" ) );
+        setBody( handler.get_response_body() );
+    }
 
     if ( request.content_type != "text/plain" ) {
         setStatusCode( status_codes.getStatusCode( 200 ) );

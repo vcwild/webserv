@@ -4,8 +4,6 @@ import os
 
 def set_params(script_name: str, path_info: str):
     print(f"""\
-Content-type: text/html
-
 <html>
 <head>
 <title>CGI Script</title>
