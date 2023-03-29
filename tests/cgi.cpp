@@ -29,7 +29,13 @@ MU_TEST( test_run_mock_cgi )
     cgi.run();
     std::string response = cgi.get_response_body();
 
-    std::string expected = "Content-type: text/html\n";
+    std::cout << response << std::endl;
+
+    std::string expected
+        = "<html>\n<head>\n<title>CGI Script</title>\n</head>\n<body>\n<h1>CGI "
+          "Script</h1>\n<p>SCRIPT_NAME: \" + ./www/cgi-bin/python-cgi + "
+          "\"</p>\n<p>PATH_INFO: \" + ./www/cgi-bin/python-cgi + "
+          "\"</p>\n</body>\n</html>\n";
 
     std::size_t size = expected.size();
 
