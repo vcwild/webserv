@@ -55,6 +55,7 @@ public:
     int         canAutoIndex( std::string path );
     int         checkRedirect();
     void        handleGet();
+    std::string generateFileName();
     void        handlePost();
     void        handleDelete();
     int         isLocation( std::string path );
