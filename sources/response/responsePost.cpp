@@ -100,9 +100,8 @@ void createFileFromFormData(const std::map<std::string, std::string>& parts, con
     if (file.is_open()) {
         file.write(data.c_str(), data.length());
         file.close();
-        std::cout << "File created on server: " << file_path << std::endl;
     } else {
-        std::cerr << "Error creating file on server: " << file_path << std::endl;
+        logger.error("Error creating file on server: " + file_path);
     }
 }
 
@@ -110,45 +109,38 @@ void createFileFromFormData(const std::map<std::string, std::string>& parts, con
 void ft::Response::handlePost()
 {
     if (isMultipartFormData(request.content_type)) {
-        // handle multipart/form-data request
-        std::cout << "Multipart form data" << std::endl;
 
         std::string boundary = getMultipartFormDataBoundary(request.content_type);
         if (!boundary.empty()) 
         {
-            std::cout << "Boundary: " << boundary << std::endl;
             std::map<std::string, std::string> parts = extractMultipartFormDataParts(request.body, boundary);
-            createFileFromFormData(parts, server_conf.root_dir);
+
+            // Check if the uploaded file is of the correct type
+            if (parts.count("content_type") > 0 && parts["content_type"].find("text/plain") != std::string::npos) {
+                // Create the file if it's of the correct type
+                createFileFromFormData(parts, server_conf.root_dir);
+
+                // Set the response status code to 201 Created
+                setStatusCode(status_codes.getStatusCode(201));
+                setContentType(mime_types.getMimeType(".html"));
+                setBody("<html><body><h1>201 Created</h1></body></html>");
+            } else {
+                // If the uploaded file is of the wrong type, return a 400 Bad Request error
+                setStatusCode(status_codes.getStatusCode(400));
+                setContentType(mime_types.getMimeType(".html"));
+                setBody("<html><body><h1>400 Bad Request</h1></body></html>");
+            }
 
         } else {
-        // handle other types of request
-    }
+            // If it's not a multipart/form-data request with a valid boundary, return a 400 Bad Request error
+            setStatusCode(status_codes.getStatusCode(400));
+            setContentType(mime_types.getMimeType(".html"));
+            setBody("<html><body><h1>400 Bad Request</h1></body></html>");
+        }
     } else {
-        // handle other types of request
+        // If it's not a multipart/form-data request, return a 202 Accepted status code indicating the request is received but not processed
+        setStatusCode(status_codes.getStatusCode(202));
+        setContentType(mime_types.getMimeType(".html"));
+        setBody("<html><body><h1>202 Accepted</h1></body></html>");
     }
-    /*
-    std::string path = getPath( request.uri );
-
-    if ( request.content_type != "text/plain" ) {
-        setStatusCode( status_codes.getStatusCode( 200 ) );
-        return;
-    }
-
-    std::string   file_path = generateFileName();
-    std::ofstream file( file_path.c_str() );
-
-    if ( !file.is_open() ) {
-        setStatusCode( status_codes.getStatusCode( 500 ) );
-        setContentType( mime_types.getMimeType( ".html" ) );
-        setBody(
-            "<html><body><h1>500 Internal Server Error</h1></body></html>" );
-        return;
-    }
-
-    file << request.body;
-    file.close();
-    setStatusCode( status_codes.getStatusCode( 201 ) );
-    setContentType( mime_types.getMimeType( ".html" ) );
-    setBody( "<html><body><h1>201 Created</h1></body></html>" );
-    */
 }
