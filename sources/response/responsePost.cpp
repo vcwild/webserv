@@ -88,28 +88,39 @@ std::map<std::string, std::string> extractMultipartFormDataParts(const std::stri
 }
 
 
+void createFileFromFormData(const std::map<std::string, std::string>& parts, const std::string& root_dir) {
+    std::string name = parts.at("name");
+    std::string filename = parts.at("filename");
+    std::string data = parts.at("data");
+
+    std::string file_path = root_dir + "/uploads/" + filename;
+
+  
+    std::ofstream file(file_path.c_str(), std::ios::out | std::ios::binary);
+    if (file.is_open()) {
+        file.write(data.c_str(), data.length());
+        file.close();
+        std::cout << "File created on server: " << file_path << std::endl;
+    } else {
+        std::cerr << "Error creating file on server: " << file_path << std::endl;
+    }
+}
+
 
 void ft::Response::handlePost()
 {
     if (isMultipartFormData(request.content_type)) {
-    // handle multipart/form-data request
-    std::cout << "Multipart form data" << std::endl;
+        // handle multipart/form-data request
+        std::cout << "Multipart form data" << std::endl;
 
-    std::string boundary = getMultipartFormDataBoundary(request.content_type);
-    if (!boundary.empty()) {
-        std::cout << "Boundary: " << boundary << std::endl;
-     std::map<std::string, std::string> parts = extractMultipartFormDataParts(request.body, boundary);
-    std::string name = parts["name"];
-    std::string filename = parts["filename"];
-    std::string content_type = parts["content_type"];
-    std::string data = parts["data"];
+        std::string boundary = getMultipartFormDataBoundary(request.content_type);
+        if (!boundary.empty()) 
+        {
+            std::cout << "Boundary: " << boundary << std::endl;
+            std::map<std::string, std::string> parts = extractMultipartFormDataParts(request.body, boundary);
+            createFileFromFormData(parts, server_conf.root_dir);
 
-    std:: cout << "Name: " << name << std::endl;
-    std:: cout << "Filename: " << filename << std::endl;
-    std:: cout << "Content-Type: " << content_type << std::endl;
-    std:: cout << "Data: " << data << std::endl;
-
-    } else {
+        } else {
         // handle other types of request
     }
     } else {
