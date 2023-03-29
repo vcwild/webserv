@@ -38,6 +38,7 @@ Request::Request( const char *buf )
 {
     std::stringstream ss( buf );
     std::string       line;
+    int aux = 0;
 
     setBody( buf );
     while ( std::getline( ss, line ) ) {
@@ -54,8 +55,9 @@ Request::Request( const char *buf )
             setAccept( line );
         } else if ( ( line ).find( CONTENT_LENGTH_KEY ) != std::string::npos ) {
             setConcentLength( line );
-        } else if ( ( line ).find( CONTENT_TYPE_KEY ) != std::string::npos ) {
+        } else if ( ( line ).find( CONTENT_TYPE_KEY ) != std::string::npos && aux == 0) {
             setContentType( line );
+            aux++;
         }
     }
 }
