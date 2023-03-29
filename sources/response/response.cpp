@@ -37,18 +37,19 @@ int ft::Response::isLocation( std::string path )
 ft::Response::Response( Request request, Config server_conf ) :
     request( request ), server_conf( server_conf )
 {
-    if (server_conf.server_name != request.host) {
-   
-        setStatusCode("400 Bad Request");
-        setContentType("text/plain");
-        setBody("Invalid Host");
-        return; 
+    if ( server_conf.server_name != request.host ) {
+        setStatusCode( status_codes.getStatusCode( 400 ) );
+        setContentType( "text/plain" );
+        setBody( "Invalid Host \n" );
+        return;
     }
 
-   if (server_conf.client_max_body_size != -1 && static_cast<int>(request.body.size()) > static_cast<int>(server_conf.client_max_body_size)) {
-        setStatusCode("413 Payload Too Large");
-        setContentType("text/plain");
-        setBody("Request body size exceeds the limit.");
+    if ( server_conf.client_max_body_size != -1
+         && static_cast<int>( request.body.size() )
+             > static_cast<int>( server_conf.client_max_body_size ) ) {
+        setStatusCode( status_codes.getStatusCode( 413 ) );
+        setContentType( "text/plain" );
+        setBody( "Request body size exceeds the limit.\n" );
         return;
     }
 
@@ -65,6 +66,10 @@ ft::Response::Response( Request request, Config server_conf ) :
         setStatusCode( status_codes.getStatusCode( 405 ) );
         setBody( "Method not allowed \n" );
         return;
+    }
+
+    if ( request.method == "POST" ) {
+        handlePost();
     }
 
     if ( request.method == "GET" ) {
@@ -117,9 +122,6 @@ std::string ft::Response::makeResponse()
         response.append( location );
         response.append( "\r\n" );
     }
-
-   
-
 
     response.append( body );
 
