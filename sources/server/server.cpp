@@ -201,22 +201,7 @@ int Server::read_request_data( int socket )
             break;
         }
     }
-
-    // check for errors
-    if ( bytes_received < 0 ) {
-        logger.error( "Error reading from connection" );
-        close( socket );
-        return FALSE;
-    }
-
-    if ( bytes_received == 0 ) {
-        logger.error( "Connection closed" );
-        close( socket );
-        return FALSE;
-    }
-    if ( bytes_received > 0 ) {
-        requests[socket] = buffer.c_str();
-    }
+    requests[socket] = buffer.c_str();
 
     return ( TRUE );
 }
