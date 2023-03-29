@@ -34,7 +34,7 @@ public:
     ~Server();
     int  start();
     int  create_sockets();
-    int  read_request_data( int socket, int request_size );
+    int  read_request_data( int socket );
     int  send_response( int socketfd, ft::Response res );
     int  handle_request_data();
     void accept_connections();

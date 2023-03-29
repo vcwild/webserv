@@ -55,8 +55,8 @@ int Server::create_sockets()
         int sockfd = socket( AF_INET, SOCK_STREAM, 0 );
         if ( sockfd < 0 ) {
             logger.error( "Error creating socket" );
-            close(sockfd);
-            exit( -1); 
+            close( sockfd );
+            exit( -1 );
         }
 
         int on = 1; // used for setsockopt
@@ -68,8 +68,8 @@ int Server::create_sockets()
         if ( fcntl( sockfd, F_SETFL, O_NONBLOCK ) < 0 ) {
             // there was an error setting the flags
             logger.error( "Error setting flags for socket" );
-            close(sockfd);
-            exit( -1); 
+            close( sockfd );
+            exit( -1 );
         }
 
         // bind the socket to the port specified in the configuration file
@@ -83,21 +83,18 @@ int Server::create_sockets()
              < 0 ) {
             logger.error( "Error binding socket to port "
                           + NumberToString( server_conf.listen_port ) );
-           close(sockfd);
-        }
-        else
-        {
+            close( sockfd );
+        } else {
 
-        if ( listen( sockfd, SOMAXCONN ) < 0 ) {
-            logger.error( "Error setting socket to listen" );
-          
-        }
+            if ( listen( sockfd, SOMAXCONN ) < 0 ) {
+                logger.error( "Error setting socket to listen" );
+            }
 
-        // add the socket file descriptor to the vector
-        sockets.push_back( sockfd );
-        logger.info( "Server started on port 🚪: http://"
-                     + server_conf.server_name + ":"
-                     + NumberToString( server_conf.listen_port ) );
+            // add the socket file descriptor to the vector
+            sockets.push_back( sockfd );
+            logger.info( "Server started on port 🚪: http://"
+                         + server_conf.server_name + ":"
+                         + NumberToString( server_conf.listen_port ) );
         }
     }
     return 0;
@@ -149,7 +146,7 @@ void Server::accept_connections()
                     logger.error( "Error accepting connection" );
                     close( server_socket );
                 } else {
-                    read_request_data( connection_socket, 1024);
+                    read_request_data( connection_socket );
                     Request request( requests[connection_socket].c_str() );
                     request.display();
                     Config server_conf = this->servers_conf[i];
@@ -164,29 +161,49 @@ void Server::accept_connections()
     return;
 }
 
-int Server::read_request_data( int socket, int request_size )
+bool ends_in_two_delimiters( std::string buffer )
 {
-    char request_buf[request_size + 1]; // buffer to store the request data
-    int  bytes_received = recv( socket, request_buf, request_size, 0 );
+    size_t pos = 0;
 
-    // check for errors
-    if ( bytes_received < 0 ) {
-        logger.error( "Error reading from connection" );
-        close( socket );
-        return FALSE;
+    pos = buffer.rfind( "\r\n\r\n" );
+    return ( pos + 4 == buffer.size() && buffer.size() > 4 );
+}
+
+int Server::read_request_data( int socket )
+{
+    std::string buffer;
+    std::string temp;
+    char        c              = { 0 };
+    int         bytes_received = 1;
+
+    while ( bytes_received > 0 ) {
+        bytes_received = recv( socket, &c, 1, 0 );
+        if ( bytes_received <= 0 )
+            break;
+        buffer += c;
+        if ( ends_in_two_delimiters( buffer ) ) {
+            size_t found  = buffer.find( "POST" );
+            size_t found2 = buffer.find( "chunked" );
+            if ( found != std::string::npos && found2 == std::string::npos ) {
+                if ( ( found = buffer.find( "Content-Length: " ) )
+                     != std::string::npos ) {
+                    temp  = buffer.substr( found );
+                    found = temp.find( " " );
+                    temp  = temp.substr( found + 1 );
+                    int v = atoi( temp.c_str() );
+                    logger.debug( "v: " + NumberToString( v ) );
+                    for ( int i = 0; i < v; i++ ) {
+                        bytes_received = recv( socket, &c, 1, 0 );
+                        if ( bytes_received <= 0 )
+                            break;
+                        buffer += c;
+                    }
+                }
+            }
+            break;
+        }
     }
-
-    if ( bytes_received == 0 ) {
-        logger.error( "Connection closed" );
-        close( socket );
-        return FALSE;
-    }
-
-    if ( bytes_received > 0 ) {
-        request_buf[bytes_received] = '\0';
-        requests[socket] = request_buf;
-    }
-
+    requests[socket] = buffer.c_str();
     return ( TRUE );
 }
 
