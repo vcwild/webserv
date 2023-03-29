@@ -185,13 +185,11 @@ int Server::read_request_data( int socket )
             size_t found  = buffer.find( "POST" );
             size_t found2 = buffer.find( "chunked" );
             if ( found != std::string::npos && found2 == std::string::npos ) {
-                found      = buffer.find( "Content-Length: " );
-                temp       = buffer.substr( found );
-                size_t pos = temp.rfind( "\r\n" );
-                temp       = temp.substr( 0, pos );
-                found      = temp.find( " " );
-                temp       = temp.substr( found + 1 );
-                int v      = atoi( temp.c_str() );
+                found = buffer.find( "Content-Length: " );
+                temp  = buffer.substr( found );
+                found = temp.find( " " );
+                temp  = temp.substr( found + 1 );
+                int v = atoi( temp.c_str() );
                 logger.debug( "v: " + NumberToString( v ) );
                 for ( int i = 0; i < v; i++ ) {
                     bytes_received = recv( socket, &c, 1, 0 );
