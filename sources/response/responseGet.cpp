@@ -146,42 +146,51 @@ int ft::Response::checkRedirect()
     return FALSE;
 }
 
+std::string sanitizeUri(const std::string& uri) {
+    if (uri.size() > 1 && uri.at(uri.size() - 1) == '/') {
+        return uri.substr(0, uri.size() - 1);
+    }
+    return uri;
+}
+
 void ft::Response::handleGet()
 {
+    std::string sanitizedUri = sanitizeUri(request.uri);
     if ( checkRedirect() ) {
         return;
     }
 
-    if ( using_route.index.size() > 0 ) {
+   if ( isDirectory( server_conf.root_dir + sanitizedUri ) ) {
         setContentType( mime_types.getMimeType( ".html" ) );
-        if ( readFromAFile( getPath( request.uri + "/" + using_route.index ),
+        if ( readFromAFile( getPath( sanitizedUri + "/" + using_route.index ),
                             body ) ) {
             setStatusCode( status_codes.getStatusCode( 200 ) );
             return;
-        } else {
+        } 
+        else {
             callErrorPage( body, server_conf.error_page[1] );
             return;
         }
         return;
     }
 
-    if ( isDirectory( server_conf.root_dir + request.uri ) ) {
-        if ( request.uri == "/" ) {
+    if ( isDirectory( server_conf.root_dir + sanitizedUri ) ) {
+        if ( sanitizedUri == "/" ) {
             setContentType( mime_types.getMimeType( ".html" ) );
-            readFromAFile( getPath( request.uri ), body );
+            readFromAFile( getPath( sanitizedUri ), body );
             setStatusCode( status_codes.getStatusCode( 200 ) );
-        } else if ( canAutoIndex( request.uri ) ) {
+        } else if ( canAutoIndex( sanitizedUri ) ) {
             setContentType( mime_types.getMimeType( ".html" ) );
-            createDirectoryListingIntoHTML( getPath( request.uri ), body );
+            createDirectoryListingIntoHTML( getPath( sanitizedUri ), body );
             setBody( body );
             setStatusCode( status_codes.getStatusCode( 200 ) );
         } else {
             callErrorPage( body, server_conf.error_page[1] );
         }
-    } else if ( isFile( getPath( request.uri ) ) ) {
-        readFromAFile( getPath( request.uri ), body );
+    } else if ( isFile( getPath( sanitizedUri ) ) ) {
+        readFromAFile( getPath( sanitizedUri ), body );
         setContentType( mime_types.getMimeType(
-            "." + getFileExtension( getPath( request.uri ) ) ) );
+            "." + getFileExtension( getPath( sanitizedUri ) ) ) );
         setStatusCode( status_codes.getStatusCode( 200 ) );
     } else {
         callErrorPage( body, server_conf.error_page[1] );
