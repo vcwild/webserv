@@ -88,20 +88,28 @@ std::map<std::string, std::string> extractMultipartFormDataParts(const std::stri
 }
 
 
-void createFileFromFormData(const std::map<std::string, std::string>& parts, const std::string& root_dir) {
+bool createFileFromFormData(const std::map<std::string, std::string>& parts, const std::string& root_dir) {
     std::string name = parts.at("name");
     std::string filename = parts.at("filename");
     std::string data = parts.at("data");
 
     std::string file_path = root_dir + "/uploads/" + filename;
 
-  
+    // Check if the file already exists
+    std::ifstream existing_file(file_path.c_str());
+    if (existing_file.good()) {
+        existing_file.close();
+        return false;
+    }
+
     std::ofstream file(file_path.c_str(), std::ios::out | std::ios::binary);
     if (file.is_open()) {
         file.write(data.c_str(), data.length());
         file.close();
+        return true;
     } else {
         logger.error("Error creating file on server: " + file_path);
+        return false;
     }
 }
 
@@ -128,12 +136,17 @@ void ft::Response::handlePost()
             // Check if the uploaded file is of the correct type
             if (parts.count("content_type") > 0 && parts["content_type"].find("text/plain") != std::string::npos) {
                 // Create the file if it's of the correct type
-                createFileFromFormData(parts, server_conf.root_dir);
+               bool created = createFileFromFormData(parts, server_conf.root_dir);
 
-                // Set the response status code to 201 Created
-                setStatusCode(status_codes.getStatusCode(201));
-                setContentType(mime_types.getMimeType(".html"));
-                setBody("<html><body><h1>201 Created</h1></body></html>");
+                if (created) {
+                    setStatusCode(status_codes.getStatusCode(201));
+                    setContentType(mime_types.getMimeType(".html"));
+                    setBody("<html><body><h1>201 Created</h1></body></html>");
+                } else {
+                    setStatusCode(status_codes.getStatusCode(409));
+                    setContentType(mime_types.getMimeType(".html"));
+                    setBody("<html><body><h1>409 Conflict</h1><p>A file with the same name already exists.</p></body></html>");
+                }
             } else {
                 // If the uploaded file is of the wrong type, return a 400 Bad Request error
                 setStatusCode(status_codes.getStatusCode(400));
