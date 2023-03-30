@@ -14,6 +14,7 @@ StatusCode::StatusCode()
     _statusCode[403] = "403 Forbidden";
     _statusCode[404] = "404 Not Found";
     _statusCode[405] = "405 Method Not Allowed";
+    _statusCode[409] = "409 Conflict";
     _statusCode[413] = "413 Request Entity Too Large";
     _statusCode[415] = "415 Unsupported Media Type";
     _statusCode[500] = "500 Internal Server Error";
