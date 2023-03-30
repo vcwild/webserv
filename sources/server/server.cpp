@@ -191,7 +191,6 @@ int Server::read_request_data( int socket )
                     found = temp.find( " " );
                     temp  = temp.substr( found + 1 );
                     int v = atoi( temp.c_str() );
-                    logger.debug( "v: " + NumberToString( v ) );
                     for ( int i = 0; i < v; i++ ) {
                         bytes_received = recv( socket, &c, 1, 0 );
                         if ( bytes_received <= 0 )

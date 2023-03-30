@@ -1,6 +1,6 @@
 NAME = webserv
 CXX := $(shell ./scripts/set_compiler.sh)
-CXXFLAGS =  -Wall -Wextra -Werror -std=c++98 -g3 -I$(INCLUDES_PATH)
+CXXFLAGS =  -Wall -Wextra -Werror -std=c++98 -I$(INCLUDES_PATH)
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
 
 # **************************************************************************** #
