@@ -154,7 +154,7 @@ void ft::Response::handleGet()
 
     if ( using_route.index.size() > 0 ) {
         setContentType( mime_types.getMimeType( ".html" ) );
-        if ( readFromAFile( getPath( request.uri + using_route.index ),
+        if ( readFromAFile( getPath( request.uri + "/" + using_route.index ),
                             body ) ) {
             setStatusCode( status_codes.getStatusCode( 200 ) );
             return;
