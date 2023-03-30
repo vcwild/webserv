@@ -152,7 +152,8 @@ void ft::Response::handleGet()
         return;
     }
 
-    if ( using_route.index.size() > 0 ) {
+    if ( using_route.index.size() > 0
+         && isDirectory( getPath( request.uri ) ) ) {
         setContentType( mime_types.getMimeType( ".html" ) );
         if ( readFromAFile( getPath( request.uri + "/" + using_route.index ),
                             body ) ) {
