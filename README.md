@@ -11,7 +11,7 @@
 
 # Webserv
 
-This project is about writing your ow HTTP server.
+This project is about writing your own HTTP server.
 
 You will be able to test it with an actual browser.
 
